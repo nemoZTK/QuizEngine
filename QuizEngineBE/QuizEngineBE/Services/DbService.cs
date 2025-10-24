@@ -2,6 +2,7 @@
 using Serilog;
 using System.Data.Common;
 using QuizEngineBE.Models;
+using QuizEngineBE.DTO;
 namespace QuizEngineBE.Services
 {
     public class DbService(QuizDbContext db, SecurityService sec) : DbBaseService<QuizDbContext>(db)
@@ -25,21 +26,31 @@ namespace QuizEngineBE.Services
 
 
 
- 
-        public async Task<bool> CreateUserAsync(string nomeUtente, string email, string password)
+
+        public async Task<UserResponse> CreateUserAsync(UserDTO utente)
         {
-            return await SafeExecuteAsync(async () =>
+            var response = new UserResponse();
+
+            var success = await SafeExecuteAsync(async () =>
             {
                 var user = new User
                 {
-                    NomeUtente = nomeUtente,
-                    Email = email,
-                    PasswordHash = _sec.Encrypt(password)
+                    NomeUtente = utente.nomeUtente,
+                    Email = utente.email,
+                    PasswordHash = _sec.Encrypt(utente.password)
                 };
 
                 await _db.Users.AddAsync(user);
+                await SaveChangesAsync(); 
+                response.Id = user.UserId;
             });
+
+            response.succes = success;
+            response.message = success ? "Utente creato con successo" : "Errore nella creazione dell'utente";
+
+            return response;
         }
+
 
         // Restituisce tutti gli utenti
         public async Task<List<User>> GetAllUsersAsync()

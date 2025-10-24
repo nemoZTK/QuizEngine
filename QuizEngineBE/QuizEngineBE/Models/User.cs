@@ -13,7 +13,8 @@ public partial class User
 
     public string? Email { get; set; }
 
-    public DateTime DataCreazione { get; set; }
+    public DateTime DataCreazione { get; set; } = DateTime.Now;
+
 
     public virtual ICollection<QuizSeed> QuizSeeds { get; set; } = new List<QuizSeed>();
 

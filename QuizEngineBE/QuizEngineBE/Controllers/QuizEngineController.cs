@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QuizEngineBE.DTO;
 using QuizEngineBE.Services;
 using Serilog;
 using System.Threading.Tasks;
@@ -22,6 +23,15 @@ namespace QuizEngineBE.Controllers
 
             return Ok(usernames);
         
+        }
+
+        [HttpPost("user")]
+        public async Task<IActionResult> AddNewUser(UserDTO user)
+        {
+            UserResponse response = await _engine.CreateNewUser(user);
+            Log.Information($"New user request : {response}");
+
+            return Ok(response);
         }
 
 
