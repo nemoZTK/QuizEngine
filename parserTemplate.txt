@@ -1,0 +1,47 @@
+
+
+
+#facile
+di che colore era il cavallo bianco di napoleone?
+
+
+-striato nero e giallo
+-tutto nero 
+-marrone 
+-bianco $ 
+
+@tempo:30sec
+
+
+
+
+#<difficoltà>
+<testo multi linea di domanda 
+comprensione del testo che termina 
+con una domanda>?
+
+-<risp1>
+-<risp2>$
+-<risp3> 
+-<risp4> 
+-<risp5>$ 
+-<risp6> 
+# 
+@tempo:<secondi espressi in numero> 
+@sequenza:<nomesequenza<numerosequenza>>
+
+
+#<difficoltà>
+<testo multi linea
+ di domanda comprensione del testo
+  che termina con una domanda>?
+  
+-<risp1>
+-<risp2>$ 
+-<risp3> 
+-<risp4> 
+-<risp5>$ 
+-<risp6> 
+# 
+@tempo:<numero secondi> 
+@variante:<nomevariante>
