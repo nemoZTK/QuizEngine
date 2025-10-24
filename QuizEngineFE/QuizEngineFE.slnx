@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="QuizEngineFE/quizenginefe.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
