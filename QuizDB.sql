@@ -9,6 +9,22 @@ CREATE TABLE Users (
 );
 GO
 
+ALTER TABLE Users
+ADD CONSTRAINT UQ_Users_NomeUtente UNIQUE (NomeUtente);
+GO
+
+
+ALTER TABLE Users
+ADD Salt NVARCHAR(255) NOT NULL DEFAULT '';
+
+ALTER TABLE Users
+ADD Ruolo NVARCHAR(50) NOT NULL DEFAULT '1';
+GO
+
+
+
+GO
+
 -- ============================= tabella Quiz  =============================
 
 CREATE TABLE Quiz (
@@ -19,6 +35,8 @@ CREATE TABLE Quiz (
     Pubblico BIT NOT NULL DEFAULT 0,      -- 0 = privato, 1 = pubblico
     CONSTRAINT FK_Quiz_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
+ALTER TABLE Quiz
+ADD CONSTRAINT UQ_Quiz_Nome UNIQUE (Nome);
 GO
 
 --============================= tabella Domanda =============================

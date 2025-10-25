@@ -25,10 +25,13 @@ builder.Services.AddDbContext<QuizDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 //-------------------- Dependency Injection --------------------
-
-builder.Services.AddScoped<SecurityService>();
 builder.Services.AddScoped<DbService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<QuizEngineService>();
+builder.Services.AddScoped<QuizService>();
+
+builder.Services.AddSingleton<SecurityService>();
+
 
 //======================================= COSTRUZIONE APP =======================================
 

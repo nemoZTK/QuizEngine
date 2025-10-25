@@ -15,6 +15,9 @@ public partial class User
 
     public DateTime DataCreazione { get; set; } = DateTime.Now;
 
+    public string Salt { get; set; } = null!;
+
+    public string Ruolo { get; set; } = null!;
 
     public virtual ICollection<QuizSeed> QuizSeeds { get; set; } = new List<QuizSeed>();
 

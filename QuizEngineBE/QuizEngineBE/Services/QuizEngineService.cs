@@ -1,43 +1,66 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.IdentityModel.Tokens;
 using QuizEngineBE.DTO;
 using QuizEngineBE.Models;
 using System.Threading.Tasks;
 
 namespace QuizEngineBE.Services
 {
-    public class QuizEngineService(DbService db)
+    public class QuizEngineService(UserService userServ,QuizService quizServ)
     {
+        private readonly UserService _userServ = userServ;
+        private readonly QuizService _quizServ = quizServ;
 
-        private readonly DbService _db = db;
-
-        public async Task<List<User>> GetUsers()
+        public async Task<UserResponse> DoLogin(LogOnRequest loginRequest)
         {
-            return await  _db.GetAllUsersAsync();
-        }
+            UserResponse response = await _userServ.IsValidRequest(loginRequest);
 
-
-        public async Task<List<string>> GetUsersNames()
-        {
-            return await _db.GetAllUsersNamesAsync();
-        }
-
-
-        public async Task<UserResponse> CreateNewUser(UserDTO user)
-        {
-            UserResponse response = new UserResponse();
-
-            if (user.nomeUtente.IsNullOrEmpty()||
-                user.password.IsNullOrEmpty()||
-                user.email.IsNullOrEmpty())
+            if (response.Success == true)
             {
-                response.succes = false;
-                response.message = "campi mancanti";
-                return response;
+            response.Token = _userServ.GenerateJwtToken(loginRequest.Username);
 
             }
-            return await _db.CreateUserAsync(user);
+
+           
+            return response;
+
 
         }
+
+        public async Task<List<string>> GetUsernames()
+        {
+            return await _userServ.GetUserNames(); 
+        }
+
+        public async Task<UserResponse> RegisterUser(UserDTO user)
+        {
+            UserResponse response= await _userServ.CreateNewUser(user);
+            if (response.Success==true)
+            {
+            response.Token= _userServ.GenerateJwtToken(user.Username);
+            }
+           
+            return response;
+
+        }
+
+        public async Task<QuizResponse> CreateQuiz(QuizDTO quiz,string? token)
+        {
+           
+            QuizResponse response = new();
+
+            string username = await _userServ.GetUsernameById(quiz.UserId);
+            
+            (response.Success,response.Message) = _userServ.IsUserAuthenticated(username, token);
+            
+            if (response.Success != true) return response;
+
+            return await _quizServ.CreateQuiz(quiz);
+
+        
+        }
+
+
 
 
 
