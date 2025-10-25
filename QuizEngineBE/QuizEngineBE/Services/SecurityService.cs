@@ -66,7 +66,7 @@ namespace QuizEngineBE.Services
 
         public (bool Success, string Message) ValidateJwtTokenForUser(string username,string token)
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(username))
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(username))
                 return (false, "Token o username non forniti");
             token = GetBearerToken(token)??"";
 
@@ -115,14 +115,16 @@ namespace QuizEngineBE.Services
         /// </summary>
         /// <param name="authHeader">l' authHeader cosi come lo estrai</param>
         /// <returns>Il token JWT pulito, oppure null se mancante o vuoto</returns>
-        public string? GetBearerToken(string  authHeader)
+        public string? GetBearerToken(string authHeader)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
                 return null;
 
+            authHeader = authHeader.TrimStart(); // rimuove solo spazi iniziali
             return authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                ? authHeader.Substring(7).Trim()
+                ? authHeader[7..].Trim()
                 : authHeader.Trim();
         }
+
     }
 }

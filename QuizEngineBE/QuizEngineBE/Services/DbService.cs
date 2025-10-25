@@ -30,7 +30,7 @@ namespace QuizEngineBE.Services
                     NomeUtente = utente.Username,
                     Email = utente.Email,
                     PasswordHash = utente.Password,
-                    Salt = utente.Salt ?? "sale&pepe",
+                    Salt = (utente.Salt!=null)?utente.Salt : "sale&pepe" ,
                     Ruolo = utente.Ruolo ?? "1"
                 };
 
@@ -68,6 +68,16 @@ namespace QuizEngineBE.Services
                                .FirstOrDefaultAsync(token)
             , ct) ?? new User();
         }
+
+        internal async Task<bool> UserExistByName(string name, CancellationToken ct = default)
+        {
+            return await SafeQueryAsync(async token =>
+                await _db.Users.AsNoTracking()
+                               .AnyAsync(u => u.NomeUtente == name, token)
+            , ct);
+        }
+
+
 
         internal async Task<QuizResponse> CreateQuizAsync(QuizDTO request, CancellationToken ct = default)
         {

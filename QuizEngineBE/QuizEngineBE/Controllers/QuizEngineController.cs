@@ -69,7 +69,11 @@ namespace QuizEngineBE.Controllers
             return Ok(response);
         }
 
-
+        [HttpPost("addQuestionsToQuiz")]
+        public async Task<IActionResult> AddQuestionsToQuiz([FromBody] DomandeDTO d)
+        {
+           throw new NotImplementedException();
+        }
 
     }
 }

@@ -15,11 +15,11 @@ public partial class Quiz
 
     public bool Pubblico { get; set; }
 
-    public virtual ICollection<Domanda> Domanda { get; set; } = new List<Domanda>();
+    public virtual ICollection<Domanda> Domanda { get; set; } = [];
 
-    public virtual ICollection<QuizSeed> QuizSeeds { get; set; } = new List<QuizSeed>();
+    public virtual ICollection<QuizSeed> QuizSeeds { get; set; } = [];
 
-    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = new List<Scoreboard>();
+    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = [];
 
     public virtual User User { get; set; } = null!;
 }

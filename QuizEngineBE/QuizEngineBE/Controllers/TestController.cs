@@ -10,15 +10,15 @@ namespace QuizEngineBE.Controllers
     {
 
         private readonly QuizEngineService _engine=engine;
-        private readonly SecurityService _sec=sec;
-        private readonly UserService _usr = usr;
 
 
-        [HttpGet("encrypt")]
-        public async Task<IActionResult> Encrypt([FromQuery] string word)
-        {
-            return Ok(_sec.EncryptSHA256xBase64(word));
-        }
+        //[HttpGet("encrypt")]
+        //public async Task<IActionResult> Encrypt([FromQuery] string word)
+        //{
+        //    return Ok(_sec.EncryptSHA256xBase64(word));
+        //}
+
+
 
 
 

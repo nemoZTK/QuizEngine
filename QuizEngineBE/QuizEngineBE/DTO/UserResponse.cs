@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Azure;
+using System.Text.Json.Serialization;
 
 namespace QuizEngineBE.DTO
 {
@@ -13,6 +14,15 @@ namespace QuizEngineBE.DTO
         {
             Success = false,
             Message = "username o Password sbagliate"
+
+
+        };
+        [JsonIgnore]
+        public UserResponse ExistingUser => new()
+        {
+            Success = false,
+            Message = "Username già esistente"
+
         };
 
 

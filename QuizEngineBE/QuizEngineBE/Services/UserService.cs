@@ -31,6 +31,7 @@ namespace QuizEngineBE.Services
             UserResponse response = new();
 
             if(!user.CheckFields) return response.MissingFields;
+            if(await _dbServ.UserExistByName(user.Username))return response.ExistingUser;
             
             user.Salt = _sec.GenerateSalt();
             user.Password = _sec.EncryptSHA256xBase64(user.Password + user.Salt);

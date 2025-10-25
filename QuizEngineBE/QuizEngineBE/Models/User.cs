@@ -19,9 +19,9 @@ public partial class User
 
     public string Ruolo { get; set; } = null!;
 
-    public virtual ICollection<QuizSeed> QuizSeeds { get; set; } = new List<QuizSeed>();
+    public virtual ICollection<QuizSeed> QuizSeeds { get; set; } = [];
 
-    public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+    public virtual ICollection<Quiz> Quizzes { get; set; } = [];
 
-    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = new List<Scoreboard>();
+    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = [];
 }

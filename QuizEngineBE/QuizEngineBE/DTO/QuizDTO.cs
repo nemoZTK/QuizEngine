@@ -18,8 +18,8 @@ namespace QuizEngineBE.DTO
 
         [JsonIgnore]
         public bool CheckFields =>
-                   !string.IsNullOrWhiteSpace(Name) &&       
-                    UserId > 0 &&                             
+                   !string.IsNullOrWhiteSpace(Name) ||       
+                   UserId < 0 ||                             
                    (Difficulties == null || Difficulties.Values.All(v => v > 0));
 
 

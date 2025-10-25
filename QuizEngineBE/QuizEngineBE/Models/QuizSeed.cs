@@ -29,7 +29,7 @@ public partial class QuizSeed
 
     public virtual Quiz Quiz { get; set; } = null!;
 
-    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = new List<Scoreboard>();
+    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = [];
 
     public virtual User User { get; set; } = null!;
 }
