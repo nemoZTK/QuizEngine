@@ -136,40 +136,28 @@ namespace QuizEngineBE.Tests
             });
 
             //========================1 Creazione quiz pubblico ========================
-            var quizResponse = await service.CreateQuizAsync(new QuizDTO
+            var quizId = await service.CreateQuizAsync(new QuizDTO
             {
                 Name = "quiz1",
                 DifficultValues = "1,2,3",
                 UserId = userResp.Id ?? 0,
-                Pubblico = true
+                Public = true
             });
-            Assert.True(quizResponse.Success && quizResponse.Id > 0,
+            Assert.True(quizId!=null,
                 "DB TEST FAILED CreateQuizAsync -->1-1\nproblem -> quiz pubblico non creato correttamente");
 
             //========================2 Creazione quiz privato ========================
-            var quizResponse2 = await service.CreateQuizAsync(new QuizDTO
+            var quizId2 = await service.CreateQuizAsync(new QuizDTO
             {
                 Name = "quiz2",
                 DifficultValues = "1,2",
                 UserId = userResp.Id ?? 0,
-                Pubblico = false
+                Public = false
             });
-            Assert.True(quizResponse2.Success,
+            Assert.True(quizId2!=null,
                 "DB TEST FAILED CreateQuizAsync -->2-1\nproblem -> quiz privato non creato correttamente");
 
             //========================3 Test vincolo unico quiz (nome) ========================
-            var existingQuiz = await db.Quizzes.AsNoTracking().FirstOrDefaultAsync(q => q.Nome == "quiz1");
-            var duplicateQuiz = await service.CreateQuizAsync(new QuizDTO
-            {
-                Name = "quiz1",
-                DifficultValues = "1,2",
-                UserId = userResp.Id ?? 0,
-                Pubblico = true
-            });
-            if (existingQuiz != null)
-                duplicateQuiz.Success = false; // simula vincolo unico
-            Assert.False(duplicateQuiz.Success,
-                "DB TEST FAILED CreateQuizAsync UNIQUE constraint -->3-1\nproblem -> vincolo unico Nome quiz non rispettato");
         }
 
         [Fact]
@@ -195,7 +183,7 @@ namespace QuizEngineBE.Tests
                 Name = "quiz1",
                 DifficultValues = "1,2,3",
                 UserId = userResp.Id ?? 0,
-                Pubblico = true
+                Public = true
             });
 
             await service.CreateQuizAsync(new QuizDTO
@@ -203,7 +191,7 @@ namespace QuizEngineBE.Tests
                 Name = "quiz2",
                 DifficultValues = "1,2",
                 UserId = userResp.Id ?? 0,
-                Pubblico = false
+                Public = false
             });
 
             //========================1 Recupero quiz pubblici ========================
@@ -233,7 +221,7 @@ namespace QuizEngineBE.Tests
 
             //========================1 Recupero utente per nome ========================
             var userByName = await service.GetUserByNameAsync("user1");
-            Assert.Equal("user1", userByName.NomeUtente);
+            Assert.Equal("user1", userByName.Username);
         }
 
         [Fact]

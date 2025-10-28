@@ -7,10 +7,11 @@ namespace QuizEngineBE.DTO
     {
         public int? Id { get; set; }
 
-        public string? Token { get; set; }
+        public string? Token { get; set; } 
+
 
         [JsonIgnore]
-        public UserResponse WrongFields => new()
+        new public UserResponse WrongFields => new()
         {
             Success = false,
             Message = "username o Password sbagliate"

@@ -30,7 +30,7 @@ namespace QuizEngineBE.Services
         {
             UserResponse response = new();
 
-            if(!user.CheckFields) return response.MissingFields;
+            if(!user.CheckFields) return response.MissingFields();
             if(await _dbServ.UserExistByName(user.Username))return response.ExistingUser;
             
             user.Salt = _sec.GenerateSalt();
@@ -43,15 +43,15 @@ namespace QuizEngineBE.Services
         public async Task<UserResponse> IsValidRequest(LogOnRequest loginRequest)
         {
             UserResponse response= new();
-            if (!loginRequest.CheckFields)return response.MissingFields;
+            if (!loginRequest.CheckFields)return response.MissingFields();
 
-            User user = await _dbServ.GetUserByNameAsync(loginRequest.Username);
+            UserDTO user = await _dbServ.GetUserByNameAsync(loginRequest.Username);
             string password = _sec.EncryptSHA256xBase64(loginRequest.Password +user.Salt);
             
-            if (password!= user.PasswordHash) return response.WrongFields;
+            if (password!= user.Password) return response.WrongFields;
 
             response.Success = true;
-            response.Id = user.UserId;
+            response.Id = user.Id;
 
 
             return response;

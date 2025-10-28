@@ -73,7 +73,7 @@ namespace QuizEngineBE.Tests
                             users.Any(u => u.NomeUtente == "Mario") &&
                             users.Any(u => u.NomeUtente == "Luigi");
 
-            Assert.True(isPassed, "DB TEST FAILED GetUsers -->1-1" + "\n" +
+            Assert.True(isPassed, "USER TEST FAILED GetUsers -->1-1" + "\n" +
                 "problem -> numero o nomi utenti errati");
         }
 
@@ -98,7 +98,7 @@ namespace QuizEngineBE.Tests
 
             //---- asserzione
             bool isPassed = names.Contains("Pippo") && names.Contains("Pluto");
-            Assert.True(isPassed, "DB TEST FAILED GetUserNames -->1-1" + "\n" +
+            Assert.True(isPassed, "USER TEST FAILED GetUserNames -->1-1" + "\n" +
                 "problem -> nomi utenti mancanti o errati");
         }
 
@@ -116,9 +116,9 @@ namespace QuizEngineBE.Tests
             var emptyDto = new UserDTO { Username = "", Password = "", Email = "" };
             var respMissing = await service.CreateNewUser(emptyDto);
 
-            Assert.False(respMissing.Success, "SECURITY TEST FAILED CreateNewUser -->1-1" + "\n" +
+            Assert.False(respMissing.Success, "USER TEST FAILED CreateNewUser -->1-1" + "\n" +
                 "problem -> expected MissingFields ma Success true");
-            Assert.True(respMissing.Message.Contains("campi mancanti"), "SECURITY TEST FAILED CreateNewUser -->1-2" + "\n" +
+            Assert.True(respMissing.Message.Contains("campi mancanti"), "USER TEST FAILED CreateNewUser -->1-2" + "\n" +
                 "problem -> message non contiene 'campi mancanti'");
 
             //========================2 Creazione valida ========================
@@ -134,12 +134,12 @@ namespace QuizEngineBE.Tests
             _output.WriteLine("CreateNewUser -> created Id: " + resp.Id + " Success: " + resp.Success + " Message: " + resp.Message);
 
             bool isPassed = resp.Success && (resp.Id ?? 0) > 0;
-            Assert.True(isPassed, "SECURITY TEST FAILED CreateNewUser -->2-1" + "\n" +
+            Assert.True(isPassed, "USER TEST FAILED CreateNewUser -->2-1" + "\n" +
                 "problem -> utente non creato correttamente");
 
             //---- controllo che il db contenga l'utente e che il nome sia corretto
             var persisted = await db.Users.FirstOrDefaultAsync(u => u.NomeUtente == "newuser");
-            Assert.True(persisted != null, "SECURITY TEST FAILED CreateNewUser -->2-2" + "\n" +
+            Assert.True(persisted != null, "USER TEST FAILED CreateNewUser -->2-2" + "\n" +
                 "problem -> utente non trovato nel DB dopo CreateNewUser");
 
             //========================3 Creazione duplicato ========================
@@ -158,10 +158,10 @@ namespace QuizEngineBE.Tests
             _output.WriteLine("CreateNewUser -> duplicate attempt Success: " + respDup.Success + " Message: " + respDup.Message);
 
             //---- asserzioni
-            Assert.False(respDup.Success, "SECURITY TEST FAILED CreateNewUser -->3-1" + "\n" +
+            Assert.False(respDup.Success, "USER TEST FAILED CreateNewUser -->3-1" + "\n" +
                 "problem -> duplicazione username non gestita come expected");
             Assert.True(respDup.Message.Contains("Username già esistente"),
-                "SECURITY TEST FAILED CreateNewUser -->3-2" + "\n" +
+                "USER TEST FAILED CreateNewUser -->3-2" + "\n" +
                 "problem -> messaggio duplicato non corretto");
 
         }
@@ -180,9 +180,9 @@ namespace QuizEngineBE.Tests
             var badLogin = new LogOnRequest { Username = "", Password = "" };
             var respBad = await service.IsValidRequest(badLogin);
 
-            Assert.False(respBad.Success, "SECURITY TEST FAILED IsValidRequest -->1-1" + "\n" +
+            Assert.False(respBad.Success, "USER TEST FAILED IsValidRequest -->1-1" + "\n" +
                 "problem -> expected MissingFields ma Success true");
-            Assert.True(respBad.Message.Contains("campi mancanti"), "SECURITY TEST FAILED IsValidRequest -->1-2" + "\n" +
+            Assert.True(respBad.Message.Contains("campi mancanti"), "USER TEST FAILED IsValidRequest -->1-2" + "\n" +
                 "problem -> message non contiene 'campi mancanti'");
 
             //========================2 Utente presente ma password sbagliata ========================
@@ -202,18 +202,18 @@ namespace QuizEngineBE.Tests
             var wrongLogin = new LogOnRequest { Username = "loginUser", Password = "badPwd" };
             var respWrong = await service.IsValidRequest(wrongLogin);
 
-            Assert.False(respWrong.Success, "SECURITY TEST FAILED IsValidRequest -->2-1" + "\n" +
+            Assert.False(respWrong.Success, "USER TEST FAILED IsValidRequest -->2-1" + "\n" +
                 "problem -> password sbagliata non rilevata");
-            Assert.True(respWrong.Message.Contains("username o Password sbagliate"), "SECURITY TEST FAILED IsValidRequest -->2-2" + "\n" +
+            Assert.True(respWrong.Message.Contains("username o Password sbagliate"), "USER TEST FAILED IsValidRequest -->2-2" + "\n" +
                 "problem -> message non contiene 'username o Password sbagliate'");
 
             //========================3 Login corretto ========================
             var goodLogin = new LogOnRequest { Username = "loginUser", Password = "correctPwd" };
             var respGood = await service.IsValidRequest(goodLogin);
 
-            Assert.True(respGood.Success, "SECURITY TEST FAILED IsValidRequest -->3-1" + "\n" +
+            Assert.True(respGood.Success, "USER TEST FAILED IsValidRequest -->3-1" + "\n" +
                 "problem -> login corretto non riconosciuto");
-            Assert.True(respGood.Id.HasValue && respGood.Id.Value > 0, "SECURITY TEST FAILED IsValidRequest -->3-2" + "\n" +
+            Assert.True(respGood.Id.HasValue && respGood.Id.Value > 0, "USER TEST FAILED IsValidRequest -->3-2" + "\n" +
                 "problem -> Id non valorizzato nel response");
         }
 
@@ -230,7 +230,7 @@ namespace QuizEngineBE.Tests
             string token = service.GenerateJwtToken("mimmo");
 
             bool isPassed = !string.IsNullOrEmpty(token);
-            Assert.True(isPassed, "SECURITY TEST FAILED GenerateJwtToken -->1-1" + "\n" +
+            Assert.True(isPassed, "USER TEST FAILED GenerateJwtToken -->1-1" + "\n" +
                 "problem -> token generato è vuoto");
         }
 
@@ -255,7 +255,7 @@ namespace QuizEngineBE.Tests
             //---- asserzione con messaggio di errore personalizzato
             Assert.True(
                 name == "whoami",
-                "DB TEST FAILED GetUsernameById -->1-1" + "\n" +
+                "USER TEST FAILED GetUsernameById -->1-1" + "\n" +
                 "problem -> nome utente recuperato errato o non trovato nel DB" + "\n" +
                 "expected: whoami" + "\n" +
                 "actual: " + name
@@ -263,7 +263,7 @@ namespace QuizEngineBE.Tests
 
             //========================2 Id non esistente deve restituire stringa vuota ========================
             var missing = await service.GetUsernameById(-999);
-            Assert.True(string.IsNullOrEmpty(missing), "DB TEST FAILED GetUsernameById -->2-1" + "\n" +
+            Assert.True(string.IsNullOrEmpty(missing), "USER TEST FAILED GetUsernameById -->2-1" + "\n" +
                 "problem -> id inesistente dovrebbe restituire stringa vuota");
         }
 
@@ -278,23 +278,23 @@ namespace QuizEngineBE.Tests
 
             //========================1 token null deve avvisare ========================
             var authNull = service.IsUserAuthenticated("mimmo", null);
-            Assert.False(authNull.success, "SECURITY TEST FAILED IsUserAuthenticated -->1-1" + "\n" +
+            Assert.False(authNull.success, "USER TEST FAILED IsUserAuthenticated -->1-1" + "\n" +
                 "problem -> token null non ha fallito");
-            Assert.True(authNull.message.Contains("almeno passalo un token dai"), "SECURITY TEST FAILED IsUserAuthenticated -->1-2" + "\n" +
+            Assert.True(authNull.message.Contains("almeno passalo un token dai"), "USER TEST FAILED IsUserAuthenticated -->1-2" + "\n" +
                 "problem -> message token null non corrisponde");
 
             //========================2 token valido ========================
             string token = sec.GenerateJwtToken("mimmo");
             var authOk = service.IsUserAuthenticated("mimmo", token);
 
-            Assert.True(authOk.success, "SECURITY TEST FAILED IsUserAuthenticated -->2-1" + "\n" +
+            Assert.True(authOk.success, "USER TEST FAILED IsUserAuthenticated -->2-1" + "\n" +
                 "problem -> token valido non riconosciuto");
 
             //========================3 token valido ma username diverso ========================
             var authMismatch = service.IsUserAuthenticated("other", token);
-            Assert.False(authMismatch.success, "SECURITY TEST FAILED IsUserAuthenticated -->3-1" + "\n" +
+            Assert.False(authMismatch.success, "USER TEST FAILED IsUserAuthenticated -->3-1" + "\n" +
                 "problem -> token valido per user diverso non ha fallito");
-            Assert.True(authMismatch.message.Contains("Username non corrispondente"), "SECURITY TEST FAILED IsUserAuthenticated -->3-2" + "\n" +
+            Assert.True(authMismatch.message.Contains("Username non corrispondente"), "USER TEST FAILED IsUserAuthenticated -->3-2" + "\n" +
                 "problem -> messaggio non contiene 'Username non corrispondente'");
         }
     }

@@ -16,6 +16,13 @@ namespace QuizEngineBE.Controllers
         private readonly QuizEngineService _engine = engine;
 
 
+        protected IActionResult ReturnWithAuthHeader<T>(T response, string? token) where T : ResponseBase<T>
+        {
+            if (!string.IsNullOrWhiteSpace(token))
+                Response.Headers.Append("Authorization", $"Bearer {token}");
+
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
 
 
         [HttpGet("usernames")]
@@ -35,28 +42,17 @@ namespace QuizEngineBE.Controllers
         {
             UserResponse response = await _engine.RegisterUser(user);
             Log.Information($"New user request : {response}");
-            if (response.Token != null)
-            {
-                Response.Headers.Append("Authorization", $"Bearer {response.Token}");
-                return Ok(response);
-            }
-            return BadRequest(response);
+
+            return ReturnWithAuthHeader(response, response.Token);
         }
 
         [HttpPost("login")]
-
         public async Task<IActionResult> DoLogin([FromBody]LogOnRequest loginRequest)
         {
    
             UserResponse response = await _engine.DoLogin(loginRequest);
-            if (response.Token != null)
-            {
-                Response.Headers.Append("Authorization", $"Bearer {response.Token}");
-                return Ok(response);
-            }
 
-            return BadRequest(response);
-
+            return ReturnWithAuthHeader(response, response.Token);
         }
 
 
@@ -66,13 +62,25 @@ namespace QuizEngineBE.Controllers
             string? token = Request.Headers["Authorization"].FirstOrDefault();
             QuizResponse response = await _engine.CreateQuiz(quiz, token);
 
-            return Ok(response);
+            return ReturnWithAuthHeader(response, token);
         }
 
-        [HttpPost("addQuestionsToQuiz")]
-        public async Task<IActionResult> AddQuestionsToQuiz([FromBody] DomandeDTO d)
+
+        [HttpPost("addToQuiz")]
+        public async Task<IActionResult> AddToQuiz([FromBody] QuestionsDTO questions)
         {
-           throw new NotImplementedException();
+            string? token = Request.Headers["Authorization"].FirstOrDefault();
+            QuestionsResponse response = await _engine.AddQuestionsToQuiz(questions, token);
+            
+            return ReturnWithAuthHeader(response, token);
+        }
+
+        [HttpGet("getQuizById")]
+        public async Task<IActionResult> GetQuizById([FromQuery] int id, int? userId )
+        {
+            string? token = Request.Headers["Authorization"].FirstOrDefault();
+            QuizResponse response = await _engine.GetQuizById(id,userId,token);
+            return ReturnWithAuthHeader(response, token);
         }
 
     }

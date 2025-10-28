@@ -6,10 +6,10 @@ namespace QuizEngineBE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TestController(QuizEngineService engine, SecurityService sec,UserService usr) : ControllerBase
+    public class TestController() : ControllerBase
     {
 
-        private readonly QuizEngineService _engine=engine;
+        //private readonly QuizEngineService _engine=engine;
 
 
         //[HttpGet("encrypt")]
