@@ -118,9 +118,46 @@ il controller che espone le chiamate al frontend che copriranno le seguenti funz
 - elimina quiz
 - elimina quizseed
 
+## QUIZ SERVICE ENGINE
+
+il service a cui si appoggia il controller contiene la logica di buisness dell'applicativo, 
+usa 
+- UserService
+- QuizService
+- SessionService
+- ScoreboardService
+
 ## QUIZ SERVICE
 
-il service a cui si appoggia il controller contiene la logica di buisness dell'applicativo
+il service che gestisce l'inserimento, la visualizzazione, la modifica e l'eliminazione di quiz, domande e pulls (quest' ultimo non modificabile credo) 
+si occupa anche del parsing di risposte e difficoltà
+usa DbService
+
+## SESSION SERVICE
+
+il service che si occupa della sessione, del suo avvio e della verifica delle risposte date
+trasforma risposte giuste e sbagliate in "risposte" e le ricontrolla a fine sessione
+
+## SCOREBOARD SERVICE
+
+il service che si occupa di salvare e visualizzare i punteggi ottenuti nei vari quizseeds
+usa Dbservice
+
+
+## PULL SEED SERVICE
+
+il service che si occupa della creazione, visualizzazione, eliminazione e modifica dei quizSeed, si occupa anche della creazione, eliminazione e visualizzazione dei pull
+quando un quizseed viene modificato, lo scoreboard relativo viene resettato.
+usa Dbservice
+
+## SECURITY SERVICE
+
+il service che si occupa dell'hashing delle password, della generazione del sale, del jwt token e della sua autenticazione
+
+## USER SERVICE
+
+il service che gestisce l'inserimento degli utenti nel db,  la loro eventuale modifica, autorizzazione e login 
+usa SecurityService e DbService
 
 ## DB SERVICE
 
