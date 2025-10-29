@@ -111,9 +111,13 @@ il controller che espone le chiamate al frontend che copriranno le seguenti funz
 - mostra quizseed
 - mostra nome di tutti i quizseed
 - crea quizseed
+- crea pull
+- visualizza pull
+- elimina pull
 - mostra scoreboard globale
 - mostra scoreboard personale
-- inizia sessione 
+- inizia sessione
+- inizia sessione (pull) 
 - invia risultato
 - elimina quiz
 - elimina quizseed
@@ -140,7 +144,7 @@ trasforma risposte giuste e sbagliate in "risposte" e le ricontrolla a fine sess
 
 ## SCOREBOARD SERVICE
 
-il service che si occupa di salvare e visualizzare i punteggi ottenuti nei vari quizseeds
+il service che si occupa di salvare e visualizzare i punteggi ottenuti nei vari quizseeds.
 usa Dbservice
 
 
@@ -156,7 +160,7 @@ il service che si occupa dell'hashing delle password, della generazione del sale
 
 ## USER SERVICE
 
-il service che gestisce l'inserimento degli utenti nel db,  la loro eventuale modifica, autorizzazione e login 
+il service che gestisce l'inserimento degli utenti nel db,  la loro eventuale modifica, autorizzazione e login. 
 usa SecurityService e DbService
 
 ## DB SERVICE
