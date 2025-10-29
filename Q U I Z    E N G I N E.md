@@ -48,6 +48,7 @@ la banca dati con tutte le domande e le risposte, con il valore associato a cias
 - nome
 - domande
 - valori difficoltà
+
 ## DOMANDA
 
 la domanda e le sue risposte, giuste e sbagliate. opzionalmente potrò avere un tempo di risposta e dei segni di appartenenza a una sequenza o ad una variante
@@ -59,6 +60,7 @@ la domanda e le sue risposte, giuste e sbagliate. opzionalmente potrò avere un 
 - sequenza e numero sequenza (opzionale)
 - variante (opzionale)
 - tempo risposta (opzionale)
+
 ## QUIZ SEED
 
 configurazione della sessione, contiene informazioni come il suo nome, da quale quiz prendere le domande, quante prenderne, che modalità. opzionalmente si può specificare quante domande per ogni difficoltà, se fare una sessione a tempo, se scegliere un tempo totale o la somma del tempo delle singole domande, e in modalità sfida: se poter tornare indietro dopo aver risposto e se poter usare lo scarto di tempo guadagnato per rispondere alle domande successive
@@ -91,11 +93,31 @@ la sessione di test che si sta svolgendo, tiene traccia del tempo, delle rispost
 - risposte date
 - tempo impiegato e tempo rimanente
 
-## GIOCATORE
+## UTENTE
 
-colui che svolge i test e ottiene i punteggi
+colui che crea, svolge i test e ottiene i punteggi
 
 - nome 
+- 
+
+## ResponseBase
+la classe base dell'oggetto che do nelle risposte, tutte le varie response che ho creato la estendono, contiene cose utili come .MissingFields .IdNotFound e .WrongFields 
+ha un campo con un messaggio e uno con un booleano che indica se è andata bene o male
+
+
+## LogOnRequest, UserDTO e UserResponse
+
+logOnRequest è l'oggetto che mi aspetto dal frontend quando si logga, mentre userDTO quello che mi aspetto quando crea un utente.
+userResponse è come gli rispondo in tutti e 2 i casi
+
+## Question, QuestionsDTO, QuestionsRespone
+questionsDTO è l'oggetto che mi aspetto per l'aggiunta o la modifica di domande al quiz. question è la singola domanda, questionresponse come rispondo.
+
+## QuizDTO, QuizPublicDTO QuizResponse
+
+quizDTO è l'oggetto che mi aspetto per l'inserimento di nuovi quiz, QuizPublicDTO è un oggetto interno che uso per interrogare il db e capire se un quiz è pubblico e a chi appartiene, Quiz respone è come rispondo.
+
+
 
 ## QUIZ CONTROLLER
 
@@ -124,7 +146,7 @@ il controller che espone le chiamate al frontend che copriranno le seguenti funz
 
 ## QUIZ SERVICE ENGINE
 
-il service a cui si appoggia il controller contiene la logica di buisness dell'applicativo, 
+il service a cui si appoggia il controller orchestra la logica di buisness dell'applicativo, 
 usa 
 - UserService
 - QuizService
@@ -147,6 +169,9 @@ trasforma risposte giuste e sbagliate in "risposte" e le ricontrolla a fine sess
 il service che si occupa di salvare e visualizzare i punteggi ottenuti nei vari quizseeds.
 usa Dbservice
 
+## PARSE SERVICE
+
+service che si occupa di tradurre i file che contengono la descrizione dei quiz, restituisce oggetti che possono essere passati a quizService da QuizEngineService
 
 ## PULL SEED SERVICE
 
