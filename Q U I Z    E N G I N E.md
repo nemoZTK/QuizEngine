@@ -110,10 +110,10 @@ ha un campo con un messaggio e uno con un booleano che indica se è andata bene 
 logOnRequest è l'oggetto che mi aspetto dal frontend quando si logga, mentre userDTO quello che mi aspetto quando crea un utente.
 userResponse è come gli rispondo in tutti e 2 i casi
 
-## Question, QuestionsDTO, QuestionsRespone
+## Question, QuestionsDTO e QuestionsRespone
 questionsDTO è l'oggetto che mi aspetto per l'aggiunta o la modifica di domande al quiz. question è la singola domanda, questionresponse come rispondo.
 
-## QuizDTO, QuizPublicDTO QuizResponse
+## QuizDTO, QuizPublicDTO e QuizResponse
 
 quizDTO è l'oggetto che mi aspetto per l'inserimento di nuovi quiz, QuizPublicDTO è un oggetto interno che uso per interrogare il db e capire se un quiz è pubblico e a chi appartiene, Quiz respone è come rispondo.
 
