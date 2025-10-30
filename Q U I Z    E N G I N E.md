@@ -169,7 +169,7 @@ trasforma risposte giuste e sbagliate in "risposte" e le ricontrolla a fine sess
 il service che si occupa di salvare e visualizzare i punteggi ottenuti nei vari quizseeds.
 usa Dbservice
 
-## PARSE SERVICE
+## FILE SERVICE
 
 service che si occupa di tradurre i file che contengono la descrizione dei quiz, restituisce oggetti che possono essere passati a quizService da QuizEngineService
 
