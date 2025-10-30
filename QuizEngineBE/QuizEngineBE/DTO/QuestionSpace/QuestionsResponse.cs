@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace QuizEngineBE.DTO
+namespace QuizEngineBE.DTO.QuestionSpace
 {
     /// <summary>
     /// la question response è l'oggetto di risposta standard per le chiamate che coinvolgono la singola domanda

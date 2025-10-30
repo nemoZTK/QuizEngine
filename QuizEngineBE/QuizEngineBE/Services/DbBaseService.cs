@@ -1,16 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QuizEngineBE.Interfaces;
 using QuizEngineBE.Models;
 using Serilog;
 using System.Data.Common;
 
 namespace QuizEngineBE.Services
 {
-        public class DbBaseService<TContext>(TContext db) where TContext : DbContext
+        public class DbBaseService<TContext>(TContext db) : IDbBaseService  where TContext: DbContext
         {
             protected readonly TContext _db = db;
 
         //============================== METODI PER OPERAZIONI SICURE ===============================================
-        protected async Task<bool> SafeExecuteAsync(Func<CancellationToken, Task> operation, CancellationToken ct = default)
+        public async Task<bool> SafeExecuteAsync(Func<CancellationToken, Task> operation, CancellationToken ct = default)
         {
             await using var transaction = await _db.Database.BeginTransactionAsync(ct);
             try
@@ -61,13 +62,14 @@ namespace QuizEngineBE.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(ct);
-                Log.Error(ex, "unexpected error");
+                Log.Error(ex, "unexpected error {Message}",ex.Message);
                 return false;
             }
         }
 
-        protected async Task<T?> SafeQueryAsync<T>(Func<CancellationToken, Task<T>> query, CancellationToken ct = default)
+        public async Task<T?> SafeQueryAsync<T>(Func<CancellationToken, Task<T>> query, CancellationToken ct = default)
         {
+
             try
             {
                 return await query(ct);
@@ -94,7 +96,7 @@ namespace QuizEngineBE.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "unexpected error executing query");
+                Log.Error(ex, "unexpected error executing query: {Message} ",ex.Message);
                 return default;
             }
         }
@@ -106,8 +108,19 @@ namespace QuizEngineBE.Services
         /// </summary>
         protected async Task SaveChangesAsync(CancellationToken ct = default)
         {
-            Log.Debug("saving in db");
-            await _db.SaveChangesAsync(ct);
+            try
+            {
+
+                Log.Debug("saving in db");
+                await _db.SaveChangesAsync(ct);
+                
+            }
+            catch(Exception ex)
+            {
+                Log.Warning("error during save : {Message}", ex.Message);
+            }
+
+
         }
 
     }

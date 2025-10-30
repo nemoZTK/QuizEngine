@@ -1,7 +1,7 @@
 ﻿using Azure;
 using Newtonsoft.Json;
 
-namespace QuizEngineBE.DTO
+namespace QuizEngineBE.DTO.UserSpace
 {
     /// <summary>
     /// DTO dell' utente, contiene da descrizione dell'utente e un metodo per controllare i campi

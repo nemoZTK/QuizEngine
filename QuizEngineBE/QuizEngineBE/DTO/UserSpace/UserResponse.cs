@@ -1,7 +1,7 @@
 ﻿using Azure;
 using System.Text.Json.Serialization;
 
-namespace QuizEngineBE.DTO
+namespace QuizEngineBE.DTO.UserSpace
 {
     public class UserResponse : ResponseBase<UserResponse>
     {

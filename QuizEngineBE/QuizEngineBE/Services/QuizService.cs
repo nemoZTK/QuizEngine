@@ -2,13 +2,15 @@
 using Azure.Core;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
-using QuizEngineBE.DTO;
+using QuizEngineBE.DTO.QuestionSpace;
+using QuizEngineBE.DTO.QuizSpace;
+using QuizEngineBE.Interfaces;
 using QuizEngineBE.Models;
 using System.Data;
 
 namespace QuizEngineBE.Services
 {
-    public class QuizService(DbService db)
+    public class QuizService(DbService db) : IQuizService
     {
 
         private readonly DbService _dbServ= db;
@@ -28,7 +30,7 @@ namespace QuizEngineBE.Services
         /// <returns>Un dizionario string,int </returns>
         private readonly Func<string,Dictionary<string, int>> ParseString= str =>
         
-            string.IsNullOrWhiteSpace(str) ? new Dictionary<string, int>() :           // controllo se è vuota in caso ritorno subito
+            string.IsNullOrWhiteSpace(str) ? [] :           // controllo se è vuota in caso ritorno subito
                                                                                       // un oggetto vuoto
                 str.Split(';', StringSplitOptions.RemoveEmptyEntries)                // altrimenti splitto la stringa per ogni blocco ;
                                                                                     // recupero chiave e valore
@@ -50,7 +52,7 @@ namespace QuizEngineBE.Services
         /// Parsa una lista di strings in una stringa "string@#%@string"
         /// </summary>
         ///<returns>Una stringa parsata "string@#%@string"</returns>
-        private readonly Func<string, List<string>> ParseAnswerStringToList = s => s.Split("@#%@", StringSplitOptions.None).ToList();
+        private readonly Func<string, List<string>> ParseAnswerStringToList = s => [.. s.Split("@#%@", StringSplitOptions.None)];
 
         /// <summary>
         /// Parsa risposte giuste e sbagliate da list a string
@@ -121,6 +123,8 @@ namespace QuizEngineBE.Services
 
         //====================================== M E T O D I == P U B B L I C I ===========================================
 
+
+        //============================= LATO QUIZ =======================
         public async Task<QuizResponse> CreateQuiz(QuizDTO request)
         {
            QuizResponse response = new();
@@ -139,13 +143,13 @@ namespace QuizEngineBE.Services
         {
             QuizResponse response = new();
 
-            var info = await _dbServ.GetQuizPublicDataById(id);
+            var info = await _dbServ.GetQuizPublicDataByIdAsync(id);
 
             if(info is null) return response.IdNotFound;
 
             if(!info.Pubblico && info.UserId!=userId) return response.IdNotFound;
             response.Success = true;
-            QuizDTO quiz = await _dbServ.GetQuizById(id);
+            QuizDTO quiz = await _dbServ.GetQuizByIdAsync(id);
             response.Id = quiz.Id;
             response.Name = quiz.Name;  
 
@@ -155,9 +159,9 @@ namespace QuizEngineBE.Services
             if (!quiz.DifficultValues.IsNullOrEmpty())
                 response.Difficulties = ParseString(quiz.DifficultValues??"");
             
-            if (await _dbServ.QuizHaveQuestions(id))
+            if (await _dbServ.QuizHaveQuestionsAsync(id))
             {
-                QuestionsDTO questions = await _dbServ.GetQuestionsByQuizId(id);
+                QuestionsDTO questions = await _dbServ.GetQuestionsByQuizIdAsync(id);
 
                 response.Questions = ParseAnswersToList(questions.Questions);
             }
@@ -165,21 +169,30 @@ namespace QuizEngineBE.Services
             return response;
          }
 
+        public Task<QuizResponse> UpdateQuiz(QuizDTO request)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<QuizResponse> DeleteQuiz(int id)
+        {
+            throw new NotImplementedException();
+        }
 
+        //============================= LATO DOMANDE ============================
 
         public async Task<QuestionsResponse> AddQuestionsToQuiz(QuestionsDTO request)
         { 
             QuestionsResponse response = new();
             if (!request.CheckFields) return response.MissingFields();
-            QuizDTO quiz= await _dbServ.GetQuizById(request.QuizId);
+            QuizDTO quiz= await _dbServ.GetQuizByIdAsync(request.QuizId);
             if (!string.IsNullOrWhiteSpace(quiz.DifficultValues))
             {
                 response=DifficultiesCheck(request.Questions, quiz.DifficultValues);
                 if (!response.Success) return response;
             }
             request.Questions = ParseAnswersToString(request.Questions);
-            response.QuestionsID = await _dbServ.AddQuestionsToQuiz(request);
+            response.QuestionsID = await _dbServ.AddQuestionsToQuizAsync(request);
             
             if(response.QuestionsID.Count> 0) response.Success = true;
 
@@ -187,10 +200,14 @@ namespace QuizEngineBE.Services
 
             
         }
+        public Task<QuestionsResponse> UpdateQuestions(QuestionsDTO request)
+        {
+            throw new NotImplementedException();
+        }
 
-        
-
-
-
+        public Task<QuizResponse> DeleteQuestions(List<int> ids)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

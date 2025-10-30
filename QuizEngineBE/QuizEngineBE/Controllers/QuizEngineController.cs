@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using QuizEngineBE.DTO;
+using QuizEngineBE.DTO.QuestionSpace;
+using QuizEngineBE.DTO.QuizSpace;
+using QuizEngineBE.DTO.UserSpace;
 using QuizEngineBE.Services;
 using Serilog;
 using System.Threading.Tasks;
@@ -16,6 +19,8 @@ namespace QuizEngineBE.Controllers
         private readonly QuizEngineService _engine = engine;
 
 
+
+
         protected IActionResult ReturnWithAuthHeader<T>(T response, string? token) where T : ResponseBase<T>
         {
             if (!string.IsNullOrWhiteSpace(token))
@@ -25,18 +30,25 @@ namespace QuizEngineBE.Controllers
         }
 
 
-        [HttpGet("usernames")]
-        public async Task<IActionResult> GetAllUserNames()
-        {
+        protected string? GetToken() => Request.Headers.Authorization.FirstOrDefault();
 
-            List<string> usernames = await _engine.GetUsernames();
 
-            Log.Information(usernames.ToString());
+        //[HttpGet("usernames")]
+        //public async Task<IActionResult> GetAllUserNames()
+        //{
 
-            return Ok(usernames);
+        //    List<string> usernames = await _engine.GetUsernames();
+
+        //    Log.Information(usernames.ToString());
+
+        //    return Ok(usernames);
+
+        //}
+
+
+        //================================== RAGGIUNGIBILI SENZA TOKEN ====================================================
+
         
-        }
-
         [HttpPost("user")]
         public async Task<IActionResult> AddNewUser(UserDTO user)
         {
@@ -55,11 +67,22 @@ namespace QuizEngineBE.Controllers
             return ReturnWithAuthHeader(response, response.Token);
         }
 
+        [HttpGet("getQuizById")]
+        public async Task<IActionResult> GetQuizById([FromQuery] int id, int? userId)
+        {
+            string? token = GetToken();
+            QuizResponse response = await _engine.GetQuizById(id, userId, token);
+            return ReturnWithAuthHeader(response, token);
+        }
+
+
+
+        //==================================== TOKEN NECESSARIO =======================================================
 
         [HttpPost("quiz")]
         public async Task<IActionResult> CreateQuiz([FromBody] QuizDTO quiz)
         {
-            string? token = Request.Headers["Authorization"].FirstOrDefault();
+            string? token = GetToken();
             QuizResponse response = await _engine.CreateQuiz(quiz, token);
 
             return ReturnWithAuthHeader(response, token);
@@ -69,19 +92,13 @@ namespace QuizEngineBE.Controllers
         [HttpPost("addToQuiz")]
         public async Task<IActionResult> AddToQuiz([FromBody] QuestionsDTO questions)
         {
-            string? token = Request.Headers["Authorization"].FirstOrDefault();
+            string? token = GetToken(); 
             QuestionsResponse response = await _engine.AddQuestionsToQuiz(questions, token);
             
             return ReturnWithAuthHeader(response, token);
         }
 
-        [HttpGet("getQuizById")]
-        public async Task<IActionResult> GetQuizById([FromQuery] int id, int? userId )
-        {
-            string? token = Request.Headers["Authorization"].FirstOrDefault();
-            QuizResponse response = await _engine.GetQuizById(id,userId,token);
-            return ReturnWithAuthHeader(response, token);
-        }
+
 
     }
 }

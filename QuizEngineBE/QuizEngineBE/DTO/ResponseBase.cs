@@ -17,7 +17,11 @@ namespace QuizEngineBE.DTO
         public string? Message { get; set; }
 
 
-
+        /// <summary>
+        /// ritorna un messaggio "Campi Mancanti "+ field e setta success a false
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns>"Campi Mancanti "+ field e success false</returns>
         protected internal T MissingFields(string? field = null)
         {
             Success = false;
@@ -25,6 +29,10 @@ namespace QuizEngineBE.DTO
             return (T)this;
         }
 
+        /// <summary>
+        /// ritorna un messaggio "Id non trovato" e setta success a false
+        /// </summary>
+        /// <returns>"Id non trovato" e success false</returns>
         [JsonIgnore]
         protected internal T IdNotFound
         {
@@ -36,6 +44,10 @@ namespace QuizEngineBE.DTO
             }
         }
 
+        /// <summary>
+        /// ritorna un messaggio "Campi errati " + field
+        /// </summary>
+        /// <returns>"Campi errati" +field e success false</returns>
         protected internal T WrongFields(string? field = null)
         {
             Success = false;

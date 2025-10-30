@@ -2,28 +2,29 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.IdentityModel.Tokens;
-using QuizEngineBE.DTO;
+using QuizEngineBE.DTO.UserSpace;
+using QuizEngineBE.Interfaces;
 using QuizEngineBE.Models;
 
 namespace QuizEngineBE.Services
 {
-    public class UserService(DbService dbServ,SecurityService sec)
+    public class UserService(DbService dbServ,SecurityService sec) : IUserService
     {
         private readonly DbService _dbServ=dbServ ;
         private readonly SecurityService _sec = sec;
 
         
 
-        public async Task<List<User>> GetUsers()
-        {
-            return await _dbServ.GetAllUsersAsync();
-        }
+        //public async Task<List<UserSpace>> GetUsers()
+        //{
+        //    return await _dbServ.GetAllUsersAsync();
+        //}
 
 
-        public async Task<List<string>> GetUserNames()
-        {
-            return await _dbServ.GetAllUserNamesAsync();
-        }
+        //public async Task<List<string>> GetUserNames()
+        //{
+        //    return await _dbServ.GetAllUserNamesAsync();
+        //}
 
 
         public async Task<UserResponse> CreateNewUser(UserDTO user)
@@ -31,7 +32,7 @@ namespace QuizEngineBE.Services
             UserResponse response = new();
 
             if(!user.CheckFields) return response.MissingFields();
-            if(await _dbServ.UserExistByName(user.Username))return response.ExistingUser;
+            if(await _dbServ.UserExistByNameAsync(user.Username))return response.ExistingUser;
             
             user.Salt = _sec.GenerateSalt();
             user.Password = _sec.EncryptSHA256xBase64(user.Password + user.Salt);
@@ -40,7 +41,7 @@ namespace QuizEngineBE.Services
         }
 
 
-        public async Task<UserResponse> IsValidRequest(LogOnRequest loginRequest)
+        public async Task<UserResponse> TryToDoLogin(LogOnRequest loginRequest)
         {
             UserResponse response= new();
             if (!loginRequest.CheckFields)return response.MissingFields();
@@ -57,18 +58,14 @@ namespace QuizEngineBE.Services
             return response;
         }
 
-        public  string GenerateJwtToken(string username)
-        {
-            return  _sec.GenerateJwtToken(username);
-        }
+        public  string GenerateJwtToken(string username) =>  _sec.GenerateJwtToken(username);
+        
 
-        public async  Task<string> GetUsernameById(int id)
-        {
-            return await  _dbServ.GetUsernameById(id);
-        }
+        public async  Task<string> GetUsernameById(int id) => await  _dbServ.GetUsernameByIdAsync(id);
+        
 
 
-        public (bool success, string message) IsUserAuthenticated(string user,string? token)
+        public (bool success, string message) IsUserAuthorized(string user,string? token)
         {
             if (token == null) return (success: false, message: "almeno passalo un token dai");
             return _sec.ValidateJwtTokenForUser(user,token);

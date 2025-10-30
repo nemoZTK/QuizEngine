@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using QuizEngineBE.DTO;
+using QuizEngineBE.Interfaces;
 using QuizEngineBE.Models;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace QuizEngineBE.Services
 {
-    public class SecurityService(IConfiguration config)
+    public class SecurityService(IConfiguration config) : ISecurityService
     {
         private readonly string _secretKey = config["Jwt:Key"]
             ?? throw new InvalidOperationException("JWT secret key not found in configuration.");
@@ -110,11 +111,7 @@ namespace QuizEngineBE.Services
                 return (false, "Token non valido");
             }
         }
-        /// <summary>
-        /// Estrae il token JWT dall'header Authorization, rimuovendo "Bearer " se presente.
-        /// </summary>
-        /// <param name="authHeader">l' authHeader cosi come lo estrai</param>
-        /// <returns>Il token JWT pulito, oppure null se mancante o vuoto</returns>
+        
         public string? GetBearerToken(string authHeader)
         {
             if (string.IsNullOrWhiteSpace(authHeader))

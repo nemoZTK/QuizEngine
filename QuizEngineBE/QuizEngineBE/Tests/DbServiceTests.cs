@@ -2,7 +2,10 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using QuizEngineBE.Models;
 using QuizEngineBE.Services;
-using QuizEngineBE.DTO;
+using QuizEngineBE.DTO.QuestionSpace;
+using QuizEngineBE.DTO.PullSeedSpace;
+using QuizEngineBE.DTO.QuizSpace;
+using QuizEngineBE.DTO.UserSpace;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -113,7 +116,7 @@ namespace QuizEngineBE.Tests
             });
 
             //========================1 Recupero username ========================
-            var username = await service.GetUsernameById(userResp.Id ?? 0);
+            var username = await service.GetUsernameByIdAsync(userResp.Id ?? 0);
             Assert.Equal("user1", username);
         }
 
@@ -196,7 +199,7 @@ namespace QuizEngineBE.Tests
 
             //========================1 Recupero quiz pubblici ========================
             var publicQuizzes = await service.GetAllPublicQuizzesAsync();
-            bool isPassed = publicQuizzes.Count == 1 && publicQuizzes[0].Nome == "quiz1";
+            bool isPassed = publicQuizzes.Count == 1 && publicQuizzes[0].Name == "quiz1";
             Assert.True(isPassed,
                 "DB TEST FAILED GetAllPublicQuizzesAsync -->1-1\nproblem -> non ha restituito solo i quiz pubblici corretti");
         }
@@ -268,19 +271,19 @@ namespace QuizEngineBE.Tests
             await db.SaveChangesAsync();
 
             //======================== Test: nome esistente ========================
-            bool existsMario = await service.UserExistByName("Mario");
-            _output.WriteLine($"UserExistByName -> Mario exists: {existsMario}");
-            Assert.True(existsMario, "DB TEST FAILED UserExistByName -->1-1: Mario dovrebbe esistere");
+            bool existsMario = await service.UserExistByNameAsync("Mario");
+            _output.WriteLine($"UserExistByNameAsync -> Mario exists: {existsMario}");
+            Assert.True(existsMario, "DB TEST FAILED UserExistByNameAsync -->1-1: Mario dovrebbe esistere");
 
             //======================== Test: nome esistente ========================
-            bool existsLuigi = await service.UserExistByName("Luigi");
-            _output.WriteLine($"UserExistByName -> Luigi exists: {existsLuigi}");
-            Assert.True(existsLuigi, "DB TEST FAILED UserExistByName -->1-2: Luigi dovrebbe esistere");
+            bool existsLuigi = await service.UserExistByNameAsync("Luigi");
+            _output.WriteLine($"UserExistByNameAsync -> Luigi exists: {existsLuigi}");
+            Assert.True(existsLuigi, "DB TEST FAILED UserExistByNameAsync -->1-2: Luigi dovrebbe esistere");
 
             //======================== Test: nome non esistente ========================
-            bool existsPeach = await service.UserExistByName("Peach");
-            _output.WriteLine($"UserExistByName -> Peach exists: {existsPeach}");
-            Assert.False(existsPeach, "DB TEST FAILED UserExistByName -->2-1: Peach non dovrebbe esistere");
+            bool existsPeach = await service.UserExistByNameAsync("Peach");
+            _output.WriteLine($"UserExistByNameAsync -> Peach exists: {existsPeach}");
+            Assert.False(existsPeach, "DB TEST FAILED UserExistByNameAsync -->2-1: Peach non dovrebbe esistere");
         }
     }
 }

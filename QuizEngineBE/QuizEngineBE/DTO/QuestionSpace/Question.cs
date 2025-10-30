@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 
-namespace QuizEngineBE.DTO
+namespace QuizEngineBE.DTO.QuestionSpace
 {
     public class Question
     {

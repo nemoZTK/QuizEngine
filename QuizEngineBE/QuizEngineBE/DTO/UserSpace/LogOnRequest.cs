@@ -1,4 +1,4 @@
-﻿namespace QuizEngineBE.DTO
+﻿namespace QuizEngineBE.DTO.UserSpace
 {
     public class LogOnRequest
     {

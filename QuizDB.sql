@@ -1,4 +1,25 @@
 
+create database QuizDb;
+
+CREATE LOGIN appuser WITH PASSWORD = 'changepassword';
+
+
+
+USE QuizDB;
+CREATE USER appuser FOR LOGIN appuser;
+
+ALTER ROLE db_datareader ADD MEMBER appuser;
+ALTER ROLE db_datawriter ADD MEMBER appuser;
+
+EXEC sp_helprolemember 'db_datareader';
+EXEC sp_helprolemember 'db_datawriter';
+
+
+
+
+use QuizDB;
+go
+
 --============================= tabella Users =============================
 CREATE TABLE Users (
     UserID INT IDENTITY(1,1) PRIMARY KEY,
@@ -86,5 +107,27 @@ CREATE TABLE Scoreboard (
     CONSTRAINT FK_Scoreboard_QuizSeed FOREIGN KEY (QuizSeedID) REFERENCES QuizSeed(QuizSeedID),
     CONSTRAINT FK_Scoreboard_Quiz FOREIGN KEY (QuizID) REFERENCES Quiz(QuizID),
     CONSTRAINT FK_Scoreboard_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+GO
+-- ============================= tabella Pull =============================
+CREATE TABLE Pull (
+    PullID INT IDENTITY(1,1) PRIMARY KEY,
+    QuizID INT NOT NULL,                         
+    QuizSeedID INT NULL,                         
+    Nome NVARCHAR(255) NOT NULL,
+    DataCreazione DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT FK_Pull_Quiz FOREIGN KEY (QuizID) REFERENCES Quiz(QuizID),
+    CONSTRAINT FK_Pull_QuizSeed FOREIGN KEY (QuizSeedID) REFERENCES QuizSeed(QuizSeedID)
+);
+GO
+
+-- ============================= tabella PullDomande (relazione molti-a-molti) =============================
+CREATE TABLE PullDomande (
+    PullDomandeID INT IDENTITY(1,1) PRIMARY KEY,
+    PullID INT NOT NULL,
+    DomandaID INT NOT NULL,
+    CONSTRAINT FK_PullDomande_Pull FOREIGN KEY (PullID) REFERENCES Pull(PullID),
+    CONSTRAINT FK_PullDomande_Domanda FOREIGN KEY (DomandaID) REFERENCES Domanda(DomandaID),
+    CONSTRAINT UQ_PullDomande UNIQUE (PullID, DomandaID) 
 );
 GO

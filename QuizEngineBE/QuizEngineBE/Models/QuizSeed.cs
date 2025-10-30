@@ -27,9 +27,11 @@ public partial class QuizSeed
 
     public bool Pubblico { get; set; }
 
+    public virtual ICollection<Pull> Pulls { get; set; } = new List<Pull>();
+
     public virtual Quiz Quiz { get; set; } = null!;
 
-    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = [];
+    public virtual ICollection<Scoreboard> Scoreboards { get; set; } = new List<Scoreboard>();
 
     public virtual User User { get; set; } = null!;
 }

@@ -17,6 +17,10 @@ public partial class QuizDbContext : DbContext
 
     public virtual DbSet<Domanda> Domanda { get; set; }
 
+    public virtual DbSet<Pull> Pulls { get; set; }
+
+    public virtual DbSet<PullDomande> PullDomandes { get; set; }
+
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
     public virtual DbSet<QuizSeed> QuizSeeds { get; set; }
@@ -30,7 +34,7 @@ public partial class QuizDbContext : DbContext
     {
         modelBuilder.Entity<Domanda>(entity =>
         {
-            entity.HasKey(e => e.DomandaId).HasName("PK__Domanda__8C939E4FD316A5C1");
+            entity.HasKey(e => e.DomandaId).HasName("PK__Domanda__8C939E4F327B027E");
 
             entity.Property(e => e.DomandaId).HasColumnName("DomandaID");
             entity.Property(e => e.Difficolta).HasMaxLength(50);
@@ -44,9 +48,54 @@ public partial class QuizDbContext : DbContext
                 .HasConstraintName("FK_Domanda_Quiz");
         });
 
+        modelBuilder.Entity<Pull>(entity =>
+        {
+            entity.HasKey(e => e.PullId).HasName("PK__Pull__70C75F5C646E864D");
+
+            entity.ToTable("Pull");
+
+            entity.Property(e => e.PullId).HasColumnName("PullID");
+            entity.Property(e => e.DataCreazione).HasColumnType("datetime");
+            entity.Property(e => e.Nome).HasMaxLength(255);
+            entity.Property(e => e.QuizId).HasColumnName("QuizID");
+            entity.Property(e => e.QuizSeedId).HasColumnName("QuizSeedID");
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.Pulls)
+                .HasForeignKey(d => d.QuizId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Pull_Quiz");
+
+            entity.HasOne(d => d.QuizSeed).WithMany(p => p.Pulls)
+                .HasForeignKey(d => d.QuizSeedId)
+                .HasConstraintName("FK_Pull_QuizSeed");
+        });
+
+        modelBuilder.Entity<PullDomande>(entity =>
+        {
+            entity.HasKey(e => e.PullDomandeId).HasName("PK__PullDoma__02748DED4DD73ABA");
+
+            entity.ToTable("PullDomande");
+
+            entity.HasIndex(e => new { e.PullId, e.DomandaId }, "UQ_PullDomande").IsUnique();
+
+            entity.Property(e => e.PullDomandeId).HasColumnName("PullDomandeID");
+            entity.Property(e => e.DomandaId).HasColumnName("DomandaID");
+            entity.Property(e => e.PullId).HasColumnName("PullID");
+
+            entity.HasOne(d => d.Domanda).WithMany(p => p.PullDomanda)
+                .HasForeignKey(d => d.DomandaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PullDomande_Domanda");
+
+            entity.HasOne(d => d.Pull).WithMany(p => p.PullDomandes)
+                .HasForeignKey(d => d.PullId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PullDomande_Pull");
+        });
+
         modelBuilder.Entity<Quiz>(entity =>
         {
-            entity.HasKey(e => e.QuizId).HasName("PK__Quiz__8B42AE6EF73A7DBC");
+            entity.HasKey(e => e.QuizId).HasName("PK__Quiz__8B42AE6ED349C851");
 
             entity.ToTable("Quiz");
 
@@ -64,7 +113,7 @@ public partial class QuizDbContext : DbContext
 
         modelBuilder.Entity<QuizSeed>(entity =>
         {
-            entity.HasKey(e => e.QuizSeedId).HasName("PK__QuizSeed__54456234F5C34385");
+            entity.HasKey(e => e.QuizSeedId).HasName("PK__QuizSeed__54456234895777C3");
 
             entity.ToTable("QuizSeed");
 
@@ -87,7 +136,7 @@ public partial class QuizDbContext : DbContext
 
         modelBuilder.Entity<Scoreboard>(entity =>
         {
-            entity.HasKey(e => e.ScoreboardId).HasName("PK__Scoreboa__757ACE4C06AFADB8");
+            entity.HasKey(e => e.ScoreboardId).HasName("PK__Scoreboa__757ACE4C26A62445");
 
             entity.ToTable("Scoreboard");
 
@@ -115,7 +164,7 @@ public partial class QuizDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACEB38D605");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACC8E1EDD3");
 
             entity.HasIndex(e => e.NomeUtente, "UQ_Users_NomeUtente").IsUnique();
 

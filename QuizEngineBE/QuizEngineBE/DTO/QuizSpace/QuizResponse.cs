@@ -1,6 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿
+using QuizEngineBE.DTO.QuestionSpace;
 
-namespace QuizEngineBE.DTO
+namespace QuizEngineBE.DTO.QuizSpace
 {
     /// <summary>
     /// la quiz response può contenere un quiz completo con domande annesse,

@@ -25,5 +25,7 @@ public partial class Domanda
 
     public string? Difficolta { get; set; }
 
+    public virtual ICollection<PullDomande> PullDomanda { get; set; } = new List<PullDomande>();
+
     public virtual Quiz Quiz { get; set; } = null!;
 }
