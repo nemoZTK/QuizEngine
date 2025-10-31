@@ -16,7 +16,11 @@ builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Nel builder
+builder.Services.AddSwaggerGen();
+
+
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -45,12 +49,12 @@ builder.Services.AddSingleton<SecurityService>();
 var app = builder.Build();
 
 app.UseDefaultFiles();
-app.MapStaticAssets();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 
