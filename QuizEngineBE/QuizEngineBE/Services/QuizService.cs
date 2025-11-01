@@ -135,7 +135,7 @@ namespace QuizEngineBE.Services
             
             
             response.Id= await _dbServ.CreateQuizAsync(request);
-            
+            response.Success = true;
             return response;
         }
 

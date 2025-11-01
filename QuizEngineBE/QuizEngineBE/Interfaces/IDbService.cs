@@ -48,15 +48,14 @@ namespace QuizEngineBE.Interfaces
 
 
 
-
         //============================ LATO QUIZ =============================================
 
 
         /// <summary>
-        /// ottiene una lista di tutti i quizDTO pubblici
+        /// ottiene una lista di tutti i quizDTO pubblici e/o appartenenti all'userId passato
         /// </summary>
-        /// <returns>una lista di quizDTO pubblici</returns>//TODO: avrebbe senso fare una select top n
-        Task<List<QuizDTO>> GetAllPublicQuizzesAsync(CancellationToken ct);
+        /// <returns>una lista di quizDTO pubblici e/o appartenenti all'userId passato</returns>//TODO: avrebbe senso recuperarne solo un tot
+        Task<List<QuizDTO>> GetAllPublicQuizzesAsync(int?userId,CancellationToken ct);
 
 
         /// <summary>
@@ -94,6 +93,7 @@ namespace QuizEngineBE.Interfaces
 
         Task<bool> DeleteQuizByIdAsync(int id, CancellationToken ct);
 
+        Task<bool> MakeQuizPrivate(int quizId, int userId, CancellationToken ct);
 
         //============================= LATO DOMANDE ==========================
 
@@ -121,9 +121,18 @@ namespace QuizEngineBE.Interfaces
 
         //============================= LATO QUIZSEED ==========================
 
+        /// <summary>
+        /// aggiunge un nuovo quizSeed al db dato un suo QuizSeedDTO
+        /// </summary>
+        /// <returns></returns>
         Task<int?> CreateQuizSeedAsync(QuizSeedDTO request, CancellationToken ct);
 
-        Task<List<QuizSeedDTO?>> GetQuizSeedsByQuizIdAndUserIdAsync(int id,int? userId, CancellationToken ct);
+
+        /// <summary>
+        /// ottiene tutti i quizSeed di un relativo quiz che sono pubblici e/o appartenenti all'userId passato
+        /// </summary>
+        /// <returns></returns>
+        Task<List<QuizSeedDTO>> GetQuizSeedsByQuizIdAndUserIdAsync(int id,int? userId, CancellationToken ct);
 
 
         Task<bool> UpdateQuizSeedAndDeleteScoreboardRecordsByIdAsync(int id , CancellationToken ct);
@@ -131,6 +140,7 @@ namespace QuizEngineBE.Interfaces
 
         Task<bool> DeleteQuizSeedAndDeleteScoreboardRecordsByIdAsync(int id, CancellationToken ct);
 
+        Task<bool> MakeQuizSeedPrivate(int id, CancellationToken ct);
 
         //============================= LATO SCOREBOARD ==========================
 

@@ -9,10 +9,10 @@ namespace QuizEngineBE.Interfaces
     public interface IPullSeedService
     {
         /// <summary>
-        /// ottiene una lista di quizSeed associati ad un quizId
+        /// ottiene una lista di quizSeed associati ad un quizId e ad un userId
         /// </summary>
         /// <returns>una QuizSeedResponse</returns>
-        Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId);
+        Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId,int? userId);
 
         /// <summary>
         /// ottiene un quizSeed dato il suo id
@@ -25,9 +25,6 @@ namespace QuizEngineBE.Interfaces
         /// <param name="quizSeedDTO"></param>
         /// <returns>una QuizSeedResponse</returns>
         Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeedDTO);
-
-
-        Task<PullDTO> GeneratePullFromQuizSeed();
 
         
         Task<QuizSeedResponse> UpdateQuizSeed(QuizSeedDTO quizSeedDTO);

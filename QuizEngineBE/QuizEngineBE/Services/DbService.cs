@@ -12,7 +12,7 @@ using QuizEngineBE.DTO.ScoreboardSpace;
 namespace QuizEngineBE.Services
 {
 
-    public class DbService(QuizDbContext db) : DbBaseService<QuizDbContext>(db) , IDbService
+    public class DbService(QuizDbContext db) : DbBaseService<QuizDbContext>(db), IDbService
     {
 
 
@@ -48,20 +48,20 @@ namespace QuizEngineBE.Services
         }
 
         public async Task<List<User>> GetAllUsersAsync(CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
+            
+            => await SafeQueryAsync(async token =>
                 await _db.Users.AsNoTracking().ToListAsync(token)
             , ct) ?? [];
-        }
+        
 
         public async Task<List<string>> GetAllUserNamesAsync(CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
+            
+            => await SafeQueryAsync(async token =>
                 await _db.Users.AsNoTracking()
                                .Select(u => u.NomeUtente)
                                .ToListAsync(token)
             , ct) ?? [];
-        }
+        
 
         public async Task<UserDTO> GetUserByNameAsync(string name, CancellationToken ct = default)
         {
@@ -79,32 +79,29 @@ namespace QuizEngineBE.Services
                 Id = user.UserId,
                 Username = user.NomeUtente,
                 Password = user.PasswordHash,
-                Email = user.Email??"mail mancante",
+                Email = user.Email ?? "mail mancante",
                 Salt = user.Salt,
                 Ruolo = user.Ruolo
             };
         }
 
         public async Task<bool> UserExistByNameAsync(string name, CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
+            
+            =>await SafeQueryAsync(async token =>
                 await _db.Users.AsNoTracking()
                                .AnyAsync(u => u.NomeUtente == name, token)
             , ct);
-        }
 
 
         public async Task<string> GetUsernameByIdAsync(int id, CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
-                await _db.Users
-                         .AsNoTracking()
-                         .Where(u => u.UserId == id)
-                         .Select(u => u.NomeUtente)
-                         .FirstOrDefaultAsync(token)
-            , ct) ?? string.Empty;
-        }
 
+                => await SafeQueryAsync(async token =>
+                    await _db.Users.AsNoTracking()
+                                   .Where(u => u.UserId == id)
+                                   .Select(u => u.NomeUtente)
+                                   .FirstOrDefaultAsync(token)
+                , ct) ?? string.Empty;
+        
 
 
 
@@ -122,29 +119,24 @@ namespace QuizEngineBE.Services
 
         //========================= LATO QUIZ =======================================
 
-        public async Task<List<QuizDTO>> GetAllPublicQuizzesAsync(CancellationToken ct = default)
-        {
-            var quizzes= await SafeQueryAsync(async token =>
-                await _db.Quizzes
-                          .AsNoTracking()
-                          .Where(q => q.Pubblico)
-                          .ToListAsync(token)
-            , ct) ?? [];
-            List<QuizDTO> quizDTOs = [];
-            foreach(var quiz in quizzes)
-            {
-                quizDTOs.Add(new QuizDTO() 
-                {
-                    Id = quiz.QuizId,
-                    Name = quiz.Nome,
-                    DifficultValues = quiz.ValoriDifficolta,
-                    Public = quiz.Pubblico,
-                    UserId = quiz.UserId
-                });
-                
-            }
-            return quizDTOs;
-        }
+        public async Task<List<QuizDTO>> GetAllPublicQuizzesAsync(int? userId, CancellationToken ct = default)
+
+            => await SafeQueryAsync(async token =>
+                             await _db.Quizzes
+                                      .AsNoTracking()
+                                      .Where(q => q.Pubblico || q.UserId == userId).Select(quiz =>
+                                          new QuizDTO()
+                                          {
+                                              Id = quiz.QuizId,
+                                              Name = quiz.Nome,
+                                              DifficultValues = quiz.ValoriDifficolta,
+                                              Public = quiz.Pubblico,
+                                              UserId = quiz.UserId
+                                          })
+                                      .ToListAsync(token)
+                        , ct) ?? [];
+
+
 
         public async Task<int?> CreateQuizAsync(QuizDTO request, CancellationToken ct = default)
         {
@@ -157,7 +149,7 @@ namespace QuizEngineBE.Services
                     Nome = request.Name,
                     ValoriDifficolta = request.DifficultValues,
                     UserId = request.UserId,
-                    Pubblico = request.Public
+                    Pubblico = request.Public ?? false,
                 };
 
                 await _db.Quizzes.AddAsync(quiz, token);
@@ -173,71 +165,68 @@ namespace QuizEngineBE.Services
 
 
         public async Task<QuizDTO> GetQuizByIdAsync(int id, CancellationToken ct = default)
-        {
-            var quiz = await SafeQueryAsync(
-                async token => await _db.Quizzes
-                    .AsNoTracking()
-                    .Where(u => u.QuizId == id)
-                    .FirstOrDefaultAsync(token),
-                ct
-            );
 
-            // Ritorna un DTO vuoto se non è stato trovato alcun quiz
-            if (quiz == null)
-                return new QuizDTO();
+            => await SafeQueryAsync(
+                    async token => await _db.Quizzes
+                        .AsNoTracking()
+                        .Where(u => u.QuizId == id).Select(quiz=> new QuizDTO
+                        {
+                            Id = id,
+                            DifficultValues = quiz.ValoriDifficolta ?? "",
+                            UserId = quiz.UserId,
+                            Name = quiz.Nome,
+                            Public = quiz.Pubblico
+                        }).FirstOrDefaultAsync(token),
+                    ct
+                )?? new();
 
-            return new QuizDTO
-            {
-                Id = id,
-                DifficultValues = quiz.ValoriDifficolta ?? "",
-                UserId = quiz.UserId,
-                Name = quiz.Nome,
-                Public = quiz.Pubblico
-            };
-        }
+
+        
 
 
         public async Task<bool> QuizExistByIdAsync(int id, CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
+            => await SafeQueryAsync(async token =>
                 await _db.Quizzes.AsNoTracking()
                                  .AnyAsync(q => q.QuizId == id, token)
             , ct);
-        }
+        
         public async Task<int?> GetQuizUserIdByIdAsync(int id, CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
-                await _db.Quizzes.AsNoTracking()
-                                 .Where(q => q.QuizId == id)
-                                 .Select(q => (int?)q.UserId)
-                                 .FirstOrDefaultAsync(token)
+            =>await SafeQueryAsync(async token =>
+                    await _db.Quizzes.AsNoTracking()
+                                     .Where(q => q.QuizId == id)
+                                     .Select(q => (int?)q.UserId)
+                                     .FirstOrDefaultAsync(token)
             , ct);
-        }
+        
 
 
         public async Task<QuizPublicDTO?> GetQuizPublicDataByIdAsync(int id, CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
+        
+            => await SafeQueryAsync(async token =>
                 await _db.Quizzes.AsNoTracking()
                                  .Where(q => q.QuizId == id)
                                  .Select(q => new QuizPublicDTO(q.UserId, q.Pubblico))
                                  .FirstOrDefaultAsync(token)
             , ct);
-        }
+        
 
         public async Task<bool> QuizHaveQuestionsAsync(int id, CancellationToken ct = default)
-        {
-            return await SafeQueryAsync(async token =>
+        
+            => await SafeQueryAsync(async token =>
                 await _db.Domanda.AsNoTracking()
                                  .AnyAsync(q => q.QuizId == id, token)
             , ct);
-        }
+        
         public Task<bool> UpdateQuizAsync(QuizDTO request, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
 
         public Task<bool> DeleteQuizByIdAsync(int id, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<bool> MakeQuizPrivate(int quizId, int userId, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
@@ -252,38 +241,31 @@ namespace QuizEngineBE.Services
                 Questions = []
             };
 
-            // Recupera tutte le domande associate al quiz
-            var domande = await SafeQueryAsync(async token =>
+            questionsDto.Questions= await SafeQueryAsync(async token =>
                 await _db.Domanda
                          .AsNoTracking()
                          .Where(d => d.QuizId == quizId)
+                         .Select(d=> new Question
+                         {
+                             Text = d.Testo,
+                             RightAnswersString = d.RisposteGiuste,
+                             WrongAnswersString = d.RisposteSbagliate,
+                             Time = d.TempoRisposta,
+                             Difficulty = d.Difficolta,
+                             Sequence = d.Sequenza,
+                             SequenceNumber = d.NumeroSequenza,
+                             Variant = d.Variante,
+                             RightAnswers = !string.IsNullOrWhiteSpace(d.RisposteGiuste)
+                                   ? d.RisposteGiuste.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+                                   : new(),
+
+                             WrongAnswers = !string.IsNullOrWhiteSpace(d.RisposteSbagliate)
+                                   ? d.RisposteSbagliate.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+                                   : new()
+                         })
                          .ToListAsync(token)
             , ct) ?? [];
-
-            foreach (var d in domande)
-            {
-                var question = new Question
-                {
-                    Text = d.Testo,
-                    RightAnswersString = d.RisposteGiuste,
-                    WrongAnswersString = d.RisposteSbagliate,
-                    Time = d.TempoRisposta,
-                    Difficulty = d.Difficolta,
-                    Sequence = d.Sequenza,
-                    SequenceNumber = d.NumeroSequenza,
-                    Variant = d.Variante,
-                    RightAnswers = !string.IsNullOrWhiteSpace(d.RisposteGiuste)
-                                   ? [.. d.RisposteGiuste.Split(',', StringSplitOptions.RemoveEmptyEntries)]
-                                   : [],
-
-                    WrongAnswers = !string.IsNullOrWhiteSpace(d.RisposteSbagliate)
-                                   ? [.. d.RisposteSbagliate.Split(',', StringSplitOptions.RemoveEmptyEntries)]
-                                   : []
-                };
-
-                questionsDto.Questions.Add(question);
-            }
-
+           
             return questionsDto;
         }
 
@@ -337,8 +319,8 @@ namespace QuizEngineBE.Services
         }
 
         public async Task<int?> CountQuestionsByQuizIdAsync(int quizId, CancellationToken ct= default)
-        {
-            return await SafeQueryAsync<int?>(async token =>
+        
+            => await SafeQueryAsync<int?>(async token =>
             {
   
                 var count = await _db.Domanda
@@ -347,7 +329,7 @@ namespace QuizEngineBE.Services
 
                 return count;
             }, ct);
-        }
+        
 
         //============================= LATO QUIZSEED =====================================
         public async Task<int?> CreateQuizSeedAsync(QuizSeedDTO request, CancellationToken ct = default)
@@ -379,10 +361,30 @@ namespace QuizEngineBE.Services
             return success ? quizSeedId : null;
         }
 
-        public Task<List<QuizSeedDTO?>> GetQuizSeedsByQuizIdAndUserIdAsync(int id, int? userId, CancellationToken ct)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<List<QuizSeedDTO>> GetQuizSeedsByQuizIdAndUserIdAsync(int quizId, int? userId, CancellationToken ct=default)
+                => await SafeQueryAsync(async token =>
+                    await _db.QuizSeeds
+                             .AsNoTracking()
+                             .Where(q => q.QuizId == quizId && (q.Pubblico || q.UserId == userId))
+                             .Select(q => new QuizSeedDTO
+                             {
+                                 Id = q.QuizSeedId,
+                                 Name = q.Nome,
+                                 QuizId = q.QuizId,
+                                 UserId = q.UserId,
+                                 CanGoBack = q.PossibilitaTornareIndietro,
+                                 CanUseTimeGap = q.PossibilitaScartoTempo,
+                                 QuestionNumner = q.NumeroDomande,
+                                 Mode = q.Modalita,
+                                 QuestionTotalTime = q.SommaTempoDomande,
+                                 TotalTime = q.TempoTotale,
+                                 Public = q.Pubblico
+                             })
+                             .ToListAsync(token)
+                , ct) ?? [];
+
+        
+        
 
         public Task<bool> UpdateQuizSeedAndDeleteScoreboardRecordsByIdAsync(int id, CancellationToken ct)
         {
@@ -397,13 +399,19 @@ namespace QuizEngineBE.Services
 
 
 
+        public Task<bool> MakeQuizSeedPrivate(int id, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
         //============================= LATO SCOREBOARD =======================================
 
         public Task<int?> CreateScoreboardRecord(ScoreboardDTO request, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
-
 
         //============================= LATO PULL =============================================
 

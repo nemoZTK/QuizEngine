@@ -20,6 +20,12 @@ namespace QuizEngineBE.Services
             return response;
         }
 
+        public async Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId,int? userId) => new()
+
+            { QuizSeeds = await _dbServ.GetQuizSeedsByQuizIdAndUserIdAsync(quizId, userId),Success=true};
+
+
+
         public async Task<PullResponse> DeletePull(int id)
         {
             throw new NotImplementedException();
@@ -30,17 +36,9 @@ namespace QuizEngineBE.Services
             throw new NotImplementedException();
         }
 
-        public async Task<PullDTO> GeneratePullFromQuizSeed()
-        {
-            throw new NotImplementedException();
-        }
+
 
         public async Task<QuizSeedResponse> GetQuizSeedById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId)
         {
             throw new NotImplementedException();
         }

@@ -9,7 +9,7 @@ namespace QuizEngineBE.DTO.QuizSpace
         public Dictionary<string, int>? Difficulties { get; set; }
         public string? DifficultValues { get; set; }
         public int UserId { get; set; }
-        public bool Public { get; set; } = false;
+        public bool? Public { get; set; }
 
         [JsonIgnore]
         public bool CheckFields =>

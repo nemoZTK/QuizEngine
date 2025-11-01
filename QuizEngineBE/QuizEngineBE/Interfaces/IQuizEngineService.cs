@@ -73,6 +73,9 @@ namespace QuizEngineBE.Interfaces
         /// <returns></returns>
         Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeedDTO, string? token);
 
+
+        Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId, int? userId,string? token);
+
         //============================= LATO SCOREBOARD =============================
 
         /// <summary>

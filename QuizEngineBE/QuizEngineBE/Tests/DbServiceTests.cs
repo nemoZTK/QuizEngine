@@ -198,7 +198,8 @@ namespace QuizEngineBE.Tests
             });
 
             //========================1 Recupero quiz pubblici ========================
-            var publicQuizzes = await service.GetAllPublicQuizzesAsync();
+            var id = 1;
+            var publicQuizzes = await service.GetAllPublicQuizzesAsync(id);
             bool isPassed = publicQuizzes.Count == 1 && publicQuizzes[0].Name == "quiz1";
             Assert.True(isPassed,
                 "DB TEST FAILED GetAllPublicQuizzesAsync -->1-1\nproblem -> non ha restituito solo i quiz pubblici corretti");

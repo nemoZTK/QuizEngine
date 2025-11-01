@@ -90,8 +90,14 @@ namespace QuizEngineBE.Controllers
 
             return ReturnWithAuthHeader(response, token);
         }
+        [HttpGet("quizSeed")]
+        public async Task<IActionResult> GetQuizseedsByQuizId([FromQuery]int quizId,[FromQuery] int? userId)
+        {
+            string? token = GetToken();
+            QuizSeedResponse response = await _engine.GetQuizSeedsByQuizId(quizId, userId, token);
 
-
+            return ReturnWithAuthHeader(response, token);
+        }
         [HttpPost("addToQuiz")]
         public async Task<IActionResult> AddToQuiz([FromBody] QuestionsDTO questions)
         {

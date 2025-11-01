@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using QuizEngineBE.DTO.PullSeedSpace;
 using QuizEngineBE.DTO.QuestionSpace;
 using QuizEngineBE.DTO.QuizSpace;
@@ -113,23 +114,6 @@ namespace QuizEngineBE.Services
 
         }
 
-        public async Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeed, string? token)
-        {
-            QuizSeedResponse response = new();
-
-            response = await _quizServ.CanSeeQuiz(response, quizSeed.QuizId, quizSeed.UserId);
-
-            (response.Success,response.Message) = await AuthorizeUser(quizSeed.UserId, token);
-            if (!response.Success) return response;
-
-            if(await _quizServ.GetQuestionNumber(quizSeed.QuizId) < quizSeed.QuestionNumner)
-                return response.WrongFields("numero domande maggiore del totale");
-
-            return await _pullSeedServ.CreateQuizSeed(quizSeed);
-
-
-
-        }
 
 
         public Task<QuizResponse> UpdateQuiz(QuizDTO quiz, string? token)
@@ -167,6 +151,39 @@ namespace QuizEngineBE.Services
 
         //================================= LATO QUIZSEED =================================================
 
+        public async Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeed, string? token)
+        {
+            QuizSeedResponse response = new();
+
+            response = await _quizServ.CanSeeQuiz(response, quizSeed.QuizId, quizSeed.UserId);
+
+            (response.Success,response.Message) = await AuthorizeUser(quizSeed.UserId, token);
+            if (!response.Success) return response;
+
+            if(await _quizServ.GetQuestionNumber(quizSeed.QuizId) < quizSeed.QuestionNumner)
+                return response.WrongFields("numero domande maggiore del totale");
+
+            return await _pullSeedServ.CreateQuizSeed(quizSeed);
+
+
+
+        }
+        
+        public async Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId, int? userId,string? token)
+        {
+            QuizSeedResponse response = new();
+
+            response = await _quizServ.CanSeeQuiz(response, quizId, userId);
+            if(userId != null)
+            {
+                (response.Success, response.Message) = await AuthorizeUser(userId??0, token);
+                if (!response.Success) return response;
+            }
+
+            return await _pullSeedServ.GetQuizSeedsByQuizId(quizId, userId);
+
+
+        }
 
 
         //=================================== LATO SCOREBOARD ===============================================
@@ -175,7 +192,6 @@ namespace QuizEngineBE.Services
         {
             throw new NotImplementedException();
         }
-
 
     }
 
