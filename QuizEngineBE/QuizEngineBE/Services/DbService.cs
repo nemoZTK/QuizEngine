@@ -7,6 +7,7 @@ using QuizEngineBE.DTO.QuizSpace;
 using QuizEngineBE.DTO.UserSpace;
 using QuizEngineBE.Interfaces;
 using QuizEngineBE.DTO.PullSeedSpace;
+using QuizEngineBE.DTO.ScoreboardSpace;
 
 namespace QuizEngineBE.Services
 {
@@ -325,17 +326,6 @@ namespace QuizEngineBE.Services
         }
 
 
-        //public async Task<bool?> GetQuizPublicStatusById(int id, CancellationToken ct = default)
-        //{
-        //    return await SafeQueryAsync(async token =>
-        //        await _db.Quizzes.AsNoTracking()
-        //                         .Where(q => q.QuizId == id)
-        //                         .Select(q => (bool?)q.Pubblico)
-        //                         .FirstOrDefaultAsync(token)
-        //    , ct);
-        //}
-
-
         public Task<bool> DeleteQuestionsByIdsAsync(List<int> ids, CancellationToken ct)
         {
             throw new NotImplementedException();
@@ -346,8 +336,48 @@ namespace QuizEngineBE.Services
             throw new NotImplementedException();
         }
 
+        public async Task<int?> CountQuestionsByQuizIdAsync(int quizId, CancellationToken ct= default)
+        {
+            return await SafeQueryAsync<int?>(async token =>
+            {
+  
+                var count = await _db.Domanda
+                    .Where(d => d.QuizId == quizId)
+                    .CountAsync(token);
+
+                return count;
+            }, ct);
+        }
 
         //============================= LATO QUIZSEED =====================================
+        public async Task<int?> CreateQuizSeedAsync(QuizSeedDTO request, CancellationToken ct = default)
+        {
+            int? quizSeedId = null;
+
+            bool success = await SafeExecuteAsync(async token =>
+            {
+                var seed = new QuizSeed
+                {
+                    Nome = request.Name,
+                    Modalita = request.Mode,
+                    NumeroDomande = request.QuestionNumner,
+                    PossibilitaScartoTempo = request.CanUseTimeGap,
+                    PossibilitaTornareIndietro = request.CanGoBack,
+                    SommaTempoDomande = request.QuestionTotalTime,
+                    TempoTotale = request.TotalTime,
+                    QuizId = request.QuizId,
+                    UserId = request.UserId,                    
+                    Pubblico = request.Public
+                };
+
+                await _db.QuizSeeds.AddAsync(seed, token);
+                await SaveChangesAsync(token);
+
+                quizSeedId = seed.QuizSeedId;
+            }, ct);
+
+            return success ? quizSeedId : null;
+        }
 
         public Task<List<QuizSeedDTO?>> GetQuizSeedsByQuizIdAndUserIdAsync(int id, int? userId, CancellationToken ct)
         {
@@ -364,10 +394,20 @@ namespace QuizEngineBE.Services
             throw new NotImplementedException();
         }
 
-        //============================= LATO PULL =============================================
+
 
 
         //============================= LATO SCOREBOARD =======================================
+
+        public Task<int?> CreateScoreboardRecord(ScoreboardDTO request, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        //============================= LATO PULL =============================================
+
+
 
     }
 }

@@ -2,6 +2,7 @@
 using Azure.Core;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
+using QuizEngineBE.DTO;
 using QuizEngineBE.DTO.QuestionSpace;
 using QuizEngineBE.DTO.QuizSpace;
 using QuizEngineBE.Interfaces;
@@ -138,17 +139,30 @@ namespace QuizEngineBE.Services
             return response;
         }
 
+        public async Task<T> CanSeeQuiz<T>(T response, int id, int? userId) where T : ResponseBase<T>
+        {
+            var info = await _dbServ.GetQuizPublicDataByIdAsync(id);
+
+            if (info is null)
+                return response.IdNotFound;
+
+            if (!info.Pubblico && info.UserId != userId)
+                return response.IdNotFound;
+
+            response.Success = true;
+            return response;
+        }
+
+
 
         public async Task<QuizResponse> GetQuizById(int id,int? userId)
         {
             QuizResponse response = new();
 
-            var info = await _dbServ.GetQuizPublicDataByIdAsync(id);
+            response = await CanSeeQuiz(response, id, userId);
 
-            if(info is null) return response.IdNotFound;
-
-            if(!info.Pubblico && info.UserId!=userId) return response.IdNotFound;
-            response.Success = true;
+            if (!response.Success) return response;
+            
             QuizDTO quiz = await _dbServ.GetQuizByIdAsync(id);
             response.Id = quiz.Id;
             response.Name = quiz.Name;  
@@ -178,6 +192,12 @@ namespace QuizEngineBE.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<Dictionary<int, string>> GetPublicQuzNames(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         //============================= LATO DOMANDE ============================
 
@@ -209,5 +229,8 @@ namespace QuizEngineBE.Services
         {
             throw new NotImplementedException();
         }
+
+
+        public Task<int?> GetQuestionNumber(int quizId) => _dbServ.CountQuestionsByQuizIdAsync(quizId);
     }
 }

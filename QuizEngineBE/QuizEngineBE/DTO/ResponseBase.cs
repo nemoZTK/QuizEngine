@@ -13,6 +13,7 @@ namespace QuizEngineBE.DTO
     /// <typeparam name="T">Tipo della classe derivata</typeparam>
     public abstract class ResponseBase<T> where T : ResponseBase<T>
     {
+
         public bool Success { get; set; } = false;
         public string? Message { get; set; }
 

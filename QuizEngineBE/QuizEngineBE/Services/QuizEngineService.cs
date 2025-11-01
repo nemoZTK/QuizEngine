@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.IdentityModel.Tokens;
@@ -13,10 +14,11 @@ using System.Threading.Tasks;
 
 namespace QuizEngineBE.Services
 {
-    public class QuizEngineService(UserService userServ, QuizService quizServ) : IQuizEngineService
+    public class QuizEngineService(UserService userServ, QuizService quizServ, PullSeedService pullSeedServ) : IQuizEngineService
     {
-        private readonly UserService _userServ = userServ;
-        private readonly QuizService _quizServ = quizServ;
+        private readonly UserService     _userServ     = userServ;
+        private readonly QuizService     _quizServ     = quizServ;
+        private readonly PullSeedService _pullSeedServ = pullSeedServ;
 
 
         //=============================================== METODI PRIVATI ======================================================================
@@ -25,7 +27,7 @@ namespace QuizEngineBE.Services
         /// <br/>(ovviamente il token per fare il confronto andrebbe passato, ma se non si riesce a recuperarlo si può non passare
         /// </summary>
         /// <returns></returns>
-        private async Task<(bool success, string message)> Autorize(int id, string? token)
+        private async Task<(bool success, string message)> AuthorizeUser(int id, string? token)
         {
             string username = await _userServ.GetUsernameById(id);
             return  _userServ.IsUserAuthorized(username, token);
@@ -41,11 +43,10 @@ namespace QuizEngineBE.Services
         {
             UserResponse response = await _userServ.TryToDoLogin(loginRequest);
 
-            if (response.Success == true)
-            {
+            if (response.Success)
                 response.Token = _userServ.GenerateJwtToken(loginRequest.Username);
 
-            }
+            
 
 
             return response;
@@ -61,10 +62,10 @@ namespace QuizEngineBE.Services
         public async Task<UserResponse> RegisterUser(UserDTO user)
         {
             UserResponse response = await _userServ.CreateNewUser(user);
-            if (response.Success == true)
-            {
+            
+            if (response.Success)
                 response.Token = _userServ.GenerateJwtToken(user.Username);
-            }
+            
 
             return response;
 
@@ -84,10 +85,13 @@ namespace QuizEngineBE.Services
         //============================ LATO QUIZ ==================================
         public async Task<QuizResponse> GetQuizById(int id, int? userId, string? token)
         {
-            QuizResponse response = new() { Success = true };
+            QuizResponse response = new();
+            
             if (userId != null)
-                (response.Success, response.Message) = await Autorize(userId ?? 0, token);
-            if (response.Success != true) return response;
+            {
+                (response.Success, response.Message) = await AuthorizeUser(userId ?? 0, token);
+                if (!response.Success) return response;
+            }
 
 
             return await _quizServ.GetQuizById(id, userId);
@@ -98,15 +102,35 @@ namespace QuizEngineBE.Services
         {
 
             QuizResponse response = new();
-            (response.Success, response.Message) = await Autorize(quiz.UserId, token);
+            
+            (response.Success, response.Message) = await AuthorizeUser(quiz.UserId, token);
 
 
-            if (response.Success != true) return response;
+            if (!response.Success) return response;
 
             return await _quizServ.CreateQuiz(quiz);
 
 
         }
+
+        public async Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeed, string? token)
+        {
+            QuizSeedResponse response = new();
+
+            response = await _quizServ.CanSeeQuiz(response, quizSeed.QuizId, quizSeed.UserId);
+
+            (response.Success,response.Message) = await AuthorizeUser(quizSeed.UserId, token);
+            if (!response.Success) return response;
+
+            if(await _quizServ.GetQuestionNumber(quizSeed.QuizId) < quizSeed.QuestionNumner)
+                return response.WrongFields("numero domande maggiore del totale");
+
+            return await _pullSeedServ.CreateQuizSeed(quizSeed);
+
+
+
+        }
+
 
         public Task<QuizResponse> UpdateQuiz(QuizDTO quiz, string? token)
         {
@@ -123,8 +147,8 @@ namespace QuizEngineBE.Services
         {
             QuestionsResponse response = new();
 
-            (response.Success, response.Message) = await Autorize(domande.UserId, token);
-            if (response.Success != true) return response;
+            (response.Success, response.Message) = await AuthorizeUser(domande.UserId, token);
+            if (!response.Success) return response;
 
 
             return await _quizServ.AddQuestionsToQuiz(domande);
@@ -141,12 +165,11 @@ namespace QuizEngineBE.Services
             throw new NotImplementedException();
         }
 
-        public Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeedDTO, string? token)
-        {
-            throw new NotImplementedException();
-        }
+        //================================= LATO QUIZSEED =================================================
 
-        //=================================== SCOREBOARD =====================================================
+
+
+        //=================================== LATO SCOREBOARD ===============================================
 
         public Task<ScoreboardResponse> GetScoreboardByQuizSeedIdAndUserId(int id, int? userId, string? token)
         {

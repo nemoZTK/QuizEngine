@@ -108,17 +108,10 @@ namespace QuizEngineBE.Services
         /// </summary>
         protected async Task SaveChangesAsync(CancellationToken ct = default)
         {
-            try
-            {
 
                 Log.Debug("saving in db");
                 await _db.SaveChangesAsync(ct);
                 
-            }
-            catch(Exception ex)
-            {
-                Log.Warning("error during save : {Message}", ex.Message);
-            }
 
 
         }

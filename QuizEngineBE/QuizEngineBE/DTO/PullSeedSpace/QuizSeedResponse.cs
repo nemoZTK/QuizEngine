@@ -1,6 +1,7 @@
 ﻿namespace QuizEngineBE.DTO.PullSeedSpace
 {
-    public class QuizSeedResponse
+    public class QuizSeedResponse : ResponseBase<QuizSeedResponse>
     {
+        public int? Id { get; set; }
     }
 }

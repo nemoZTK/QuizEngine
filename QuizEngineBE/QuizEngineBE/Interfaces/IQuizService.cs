@@ -1,4 +1,5 @@
-﻿using QuizEngineBE.DTO.QuestionSpace;
+﻿using QuizEngineBE.DTO;
+using QuizEngineBE.DTO.QuestionSpace;
 using QuizEngineBE.DTO.QuizSpace;
 
 namespace QuizEngineBE.Interfaces
@@ -26,11 +27,19 @@ namespace QuizEngineBE.Interfaces
         /// <returns></returns>
         Task<QuizResponse> CreateQuiz(QuizDTO request);
 
+        /// <summary>
+        /// determina se il quiz sia visibile o meno
+        /// </summary>
+        /// <returns> l'oggetto response passato, con success true/false in base alla possibilità di vedere il quiz o meno</returns>
+        Task<T> CanSeeQuiz<T>(T response, int id, int? userId) where T : ResponseBase<T>;
+
+        Task<Dictionary<int, string>> GetPublicQuzNames(int userId);
 
         Task<QuizResponse> UpdateQuiz(QuizDTO request);
 
 
         Task<QuizResponse> DeleteQuiz(int id);
+
 
         //============================= LATO DOMANDE ==========================================
 
@@ -46,6 +55,7 @@ namespace QuizEngineBE.Interfaces
         Task<QuizResponse> DeleteQuestions(List<int> ids);
 
 
+        Task<int?> GetQuestionNumber(int quizId);
 
 
 

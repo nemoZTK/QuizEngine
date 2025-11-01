@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using QuizEngineBE.DTO;
+using QuizEngineBE.DTO.PullSeedSpace;
 using QuizEngineBE.DTO.QuestionSpace;
 using QuizEngineBE.DTO.QuizSpace;
 using QuizEngineBE.DTO.UserSpace;
@@ -77,6 +78,8 @@ namespace QuizEngineBE.Controllers
 
 
 
+
+
         //==================================== TOKEN NECESSARIO =======================================================
 
         [HttpPost("quiz")]
@@ -97,7 +100,16 @@ namespace QuizEngineBE.Controllers
             
             return ReturnWithAuthHeader(response, token);
         }
+        [HttpPost("quizSeed")]
+        public async Task<IActionResult> AddQuizSeed([FromBody] QuizSeedDTO quizSeed)
+        {
+            string? token = GetToken();
 
+            QuizSeedResponse response = await _engine.CreateQuizSeed(quizSeed, token);
+
+            return ReturnWithAuthHeader(response, token);
+        
+        }
 
 
     }

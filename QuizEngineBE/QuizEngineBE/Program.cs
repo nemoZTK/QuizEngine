@@ -36,6 +36,7 @@ builder.Services.AddDbContext<QuizDbContext>(options =>
 //-------------------- Dependency Injection --------------------
 builder.Services.AddScoped<DbService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<PullSeedService>();
 builder.Services.AddScoped<QuizEngineService>();
 builder.Services.AddScoped<QuizService>();
 

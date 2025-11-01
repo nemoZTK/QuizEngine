@@ -1,6 +1,7 @@
 ﻿using QuizEngineBE.DTO.PullSeedSpace;
 using QuizEngineBE.DTO.QuestionSpace;
 using QuizEngineBE.DTO.QuizSpace;
+using QuizEngineBE.DTO.ScoreboardSpace;
 using QuizEngineBE.DTO.UserSpace;
 using QuizEngineBE.Models;
 
@@ -115,10 +116,12 @@ namespace QuizEngineBE.Interfaces
 
         Task<bool> UpdateQuestionsAsync(QuestionsDTO request, CancellationToken ct);
 
-
+        Task<int?> CountQuestionsByQuizIdAsync(int quizId, CancellationToken ct); 
 
 
         //============================= LATO QUIZSEED ==========================
+
+        Task<int?> CreateQuizSeedAsync(QuizSeedDTO request, CancellationToken ct);
 
         Task<List<QuizSeedDTO?>> GetQuizSeedsByQuizIdAndUserIdAsync(int id,int? userId, CancellationToken ct);
 
@@ -131,6 +134,7 @@ namespace QuizEngineBE.Interfaces
 
         //============================= LATO SCOREBOARD ==========================
 
+        Task<int?> CreateScoreboardRecord(ScoreboardDTO request, CancellationToken ct);
 
 
         //============================= LATO PULL =============================

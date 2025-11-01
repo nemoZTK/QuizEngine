@@ -4,34 +4,43 @@ using QuizEngineBE.Interfaces;
 namespace QuizEngineBE.Services
 {
     //TODO: da implementare
-    public class PullSeedService : IPullSeedService
+    public class PullSeedService(DbService db) : IPullSeedService
     {
-        public Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeedDTO)
+
+        private readonly DbService _dbServ = db;
+        public async Task<QuizSeedResponse> CreateQuizSeed(QuizSeedDTO quizSeedDTO)
+        {
+            QuizSeedResponse response = new();
+
+            if (!quizSeedDTO.CheckFields) return response.WrongFields();
+
+            response.Id = await _dbServ.CreateQuizSeedAsync(quizSeedDTO);
+            if (response.Id != null) response.Success = true;
+
+            return response;
+        }
+
+        public async Task<PullResponse> DeletePull(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PullResponse> DeletePull(int id)
+        public async Task<QuizSeedResponse> DeleteQuizSeed(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<QuizSeedResponse> DeleteQuizSeed(int id)
+        public async Task<PullDTO> GeneratePullFromQuizSeed()
         {
             throw new NotImplementedException();
         }
 
-        public Task<PullDTO> GeneratePullFromQuizSeed()
+        public async Task<QuizSeedResponse> GetQuizSeedById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<QuizSeedResponse> GetQuizSeedById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId)
+        public async Task<QuizSeedResponse> GetQuizSeedsByQuizId(int quizId)
         {
             throw new NotImplementedException();
         }
